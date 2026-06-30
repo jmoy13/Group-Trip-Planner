@@ -43,7 +43,7 @@ Implied choices that follow from the stack, unless overridden:
 - **API style**: Next.js Route Handlers (`app/api/.../route.ts`) for REST-ish endpoints, plus Server Actions for form-style mutations from Server Components. Prefer Server Actions for simple mutations (vote, add expense) and Route Handlers for anything that needs to be called from client-side fetch with custom status codes (e.g., invite acceptance flows).
 - **Validation**: Zod, shared between client forms and server-side parsing. One schema per resource, colocated in `lib/validation/`.
 - **Database hosting**: Vercel Postgres or Neon (serverless Postgres) — both work with Prisma's connection pooling pattern needed for serverless functions. Use `DATABASE_URL` (pooled) and `DIRECT_URL` (for migrations) as separate env vars.
-- **Session strategy**: Database sessions (not pure JWT) via the Auth.js Prisma adapter, so sessions can be revoked server-side and role lookups stay fresh.
+- **Session strategy**: Database sessions (not pure JWT) via the Auth.js Prisma adapter, so sessions can be revoked server-side and role lookups stay fresh. **Caveat**: Auth.js's Credentials provider does not support the `database` session strategy natively (a documented library limitation — it's JWT-only). To keep database sessions for *both* Google and email/password login, the credentials flow bypasses Auth.js's built-in sign-in path: `lib/auth/credentials.ts` verifies the password directly, then manually creates a `Session` row and sets the same `authjs.session-token` cookie Auth.js itself would set (name, value format, and options mirrored from `@auth/core`'s `defaultCookies()`), so `auth()`/`proxy.ts`/`signOut()` treat it identically to an Auth.js-issued session. There is no Auth.js `CredentialsProvider` registered in `auth.ts` — only `Google`.
 
 ---
 
@@ -61,25 +61,32 @@ Implied choices that follow from the stack, unless overridden:
       (dashboard)/
         trips/
           page.tsx                  // list of user's trips
+          new/                      // create-trip form
           [tripId]/
-            page.tsx                // trip dashboard
-            destinations/
-            dates/
-            budget/
-            itinerary/
+            layout.tsx              // membership guard (notFound() for non-members) + trip nav
+            page.tsx                // trip dashboard (start-voting / finalize panels live here)
+            actions.ts              // startVotingAction, finalizeTripAction
+            destinations/           // propose + vote on destinations (actions.ts + page.tsx)
+            dates/                  // propose + vote on date ranges (actions.ts + page.tsx)
+            budget/                 // owner-only category CRUD (actions.ts + page.tsx)
+            itinerary/              // member CRUD + drag-and-drop reorder (actions.ts + page.tsx)
             expenses/
-            members/
-            settings/
+            members/                // list/invite/remove
+            settings/                // owner-only edit + delete
+      invite/
+        [token]/page.tsx           // accept-invitation flow (outside (dashboard) — must work logged-out)
+        actions.ts
       api/
         auth/[...nextauth]/route.ts
-        trips/[tripId]/invite/route.ts
+        trips/[tripId]/invite/route.ts   // POST: owner creates an invitation
         webhooks/...
     lib/
       auth/
-        permissions.ts             // role + membership checks
+        permissions.ts             // role + membership checks (requireUser/requireTripMembership/requireTripOwner)
         session.ts                 // getServerSession wrapper
+        credentials.ts             // password hash/verify + manual DB session creation (see §10 caveat)
       validation/                  // zod schemas
-      services/                    // business logic per domain (trips, voting, expenses, itinerary)
+      services/                    // business logic per domain — trips.ts, invitations.ts, email.ts, voting.ts, budget.ts, itinerary.ts so far
       db.ts                        // Prisma client singleton
     components/
       ui/                          // generic, reusable (Button, Card, Modal, etc.)
@@ -93,6 +100,7 @@ Implied choices that follow from the stack, unless overridden:
       migrations/
     types/
   ```
+  Plus two project-root files required by their respective libraries: `auth.ts` (Auth.js v5 config — `handlers`/`auth`/`signIn`/`signOut`) and `proxy.ts` (Next.js 16's route-protection convention; see §6.1).
 - **Type safety end to end**: Prisma generates types for the DB layer; Zod schemas generate types for input validation; never use `any`. Shared domain types (e.g., `TripWithMembers`) live in `types/` and are derived from Prisma's `Prisma.TripGetPayload<...>` helpers rather than hand-duplicated.
 
 ---
@@ -329,9 +337,9 @@ Notes on design decisions baked into this schema:
 
 ### 6.1 Authentication
 
-- Auth.js with the Prisma adapter, database sessions.
-- Support email/password (with hashed passwords, e.g. via `bcrypt`) AND at least one OAuth provider (Google) — credentials alone is a weak default for a "real product" feel.
-- Protect all `(dashboard)` routes via middleware (`middleware.ts`) checking for a valid session; redirect unauthenticated users to `/sign-in` with a `callbackUrl`.
+- Auth.js with the Prisma adapter, database sessions (see the caveat in §2 — credentials login creates its database session manually, outside Auth.js's own sign-in path).
+- Support email/password (with hashed passwords via `bcryptjs` — chosen over `bcrypt` to avoid native/node-gyp build issues in this environment; same hashing algorithm, drop-in API) AND at least one OAuth provider (Google) — credentials alone is a weak default for a "real product" feel.
+- Protect all `(dashboard)` routes via `proxy.ts` (**not** `middleware.ts` — Next.js 16 deprecated and renamed the `middleware` file convention to `proxy`; same `(request, event) => Response` contract, default export, and `config.matcher`) checking for a valid session; redirect unauthenticated users to `/sign-in` with a `callbackUrl`.
 
 ### 6.2 Trip Creation & Membership
 
@@ -403,10 +411,10 @@ Notes on design decisions baked into this schema:
 ## 9. Build Order (suggested milestones)
 
 1. Project scaffold: Next.js + TS + Tailwind + Prisma + Postgres connection, deployed to Vercel with a working "hello world" route.
-2. Auth.js wired up (credentials + Google), database sessions, protected route middleware.
-3. Trip CRUD + membership + invitation flow (no voting/budget/expenses yet).
-4. Destination & date voting (the unique-constraint-based voting model).
-5. Budget categories + itinerary items (simpler CRUD-with-permissions features).
+2. Auth.js wired up (credentials + Google), database sessions, protected routes via `proxy.ts`. **Done** — see §10.
+3. Trip CRUD + membership + invitation flow (no voting/budget/expenses yet). **Done** — see §10.
+4. Destination & date voting (the unique-constraint-based voting model). **Done** — see §10.
+5. Budget categories + itinerary items (simpler CRUD-with-permissions features). **Done** — see §10.
 6. Expense entry + split calculation + balances + settlement algorithm.
 7. Dashboard page pulling all of the above together.
 8. Polish: empty states, loading states, responsive layout pass, error boundaries.
@@ -421,4 +429,19 @@ These were open questions, now resolved — recorded here so the reasoning isn't
 - **Voting**: Single-choice per poll (one vote per user per destination poll, one vote per user per date poll), enforced via DB unique constraint.
 - **Currency**: Single stored currency per trip (`Trip.currency`). No multi-currency expenses, no exchange-rate history. Users can optionally view dashboard amounts converted to a personal preferred display currency — display-only, original amount always remains the source of truth (see 6.4a).
 - **Invitations**: Email delivery is stubbed (console.log) for now. Swap in Resend/Postmark later behind the same interface — keep the "send invitation email" call isolated in one function (e.g. `lib/services/email.ts`) so swapping providers later doesn't touch invitation logic.
+- **Proxy vs Middleware**: This Next.js version (16.2.9) renamed `middleware.ts` to `proxy.ts` (confirmed via `node_modules/next/dist/docs`). Use `proxy.ts` everywhere this file says "middleware." `npx @next/codemod@canary middleware-to-proxy .` exists if a future dependency reintroduces a stray `middleware.ts`.
+- **bcrypt → bcryptjs**: Used `bcryptjs` instead of `bcrypt` for password hashing — same algorithm and API, but pure JS (no native build step), which avoids node-gyp friction in local dev and serverless builds.
+- **Invitation tokens**: `crypto.randomBytes(32).toString("hex")` (256-bit, opaque, unguessable) rather than a JWT — there's nothing to verify offline, just a DB lookup by `token`, so a plain random string is simpler and equally secure. Invitations expire 7 days after creation/resend (`expiresAt`); re-inviting the same not-yet-accepted email rotates the existing `TripInvitation` row's token/expiry instead of creating a duplicate row.
+- **Invite creation vs. acceptance split**: Per §2's API style guidance, creating an invitation (owner action) is a Route Handler (`POST /api/trips/[tripId]/invite`, matches the suggested folder layout) so the client `InviteMemberForm` can fetch it and show custom status codes (401/403/409-style messages). Accepting an invitation is a Server Action (`app/invite/actions.ts`) since it's a simple same-page mutation with no documented dedicated route — the visitor already lands on `/invite/[token]`, which resolves the trip via the token itself.
+- **Non-member trip access**: Visiting `/trips/[tripId]/*` without an ACCEPTED `TripMembership` calls `notFound()` (renders the standard 404) rather than a distinguishable 403 — this avoids confirming a trip ID exists to someone who isn't a member. Enforced in `app/(dashboard)/trips/[tripId]/layout.tsx` and re-checked in every trip Server Action/Route Handler via `lib/auth/permissions.ts`, per §4/§7.
+- **Invite accept email matching**: `acceptInvitation` requires the signed-in user's email to exactly match `TripInvitation.email` before creating the membership — not specified explicitly in §6.2, but necessary so a different logged-in user can't consume someone else's invitation link. If they don't match, `/invite/[token]` shows a "wrong account" message with a sign-out option instead of silently failing.
+- **Credentials + database sessions**: Auth.js's `CredentialsProvider` cannot use the `database` session strategy (hard library limitation, JWT-only). Implemented a custom session helper (`lib/auth/credentials.ts`) that hashes/verifies passwords and manually creates a `Session` row + the matching `authjs.session-token` cookie, so credentials logins get real, server-revocable database sessions identical in shape to Auth.js's own (Google) sessions. `auth.ts` only registers the `Google` provider; email/password is handled entirely in `app/(auth)/actions.ts` + `lib/auth/credentials.ts`, never through Auth.js's `signIn("credentials", ...)`.
+- **`proposedBy`/relation fields stay plain strings**: `DestinationOption.proposedBy` / `DateOption.proposedBy` are plain `String` columns, not relations — matches §5's literal schema (only `ItineraryItem.createdById` is a real relation there). An earlier in-progress draft of `lib/services/voting.ts` had used a `proposedById` relation pattern instead; reconciled back to the documented plain-string contract rather than changing the schema, per explicit direction.
+- **Finalize uses option IDs, not freeform dates**: `FinalizeTripSchema`/`finalizeTrip` take `finalDestinationId` + `finalDateOptionId` (both referencing existing, trip-scoped `DestinationOption`/`DateOption` rows) rather than accepting raw `finalStartDate`/`finalEndDate` values directly from the client. §6.3 describes finalize as defaulting to "the current leading options" with the owner able to "override the leading option manually" — read as choosing among proposed options, not entering arbitrary dates. `Trip.finalStartDate`/`finalEndDate` are still populated by copying the chosen `DateOption`'s dates at finalize time, matching §5's plain-`DateTime` field shape.
+- **`PLANNING` → `VOTING` transition**: §6.3 describes voting behavior but not what triggers it. Added an owner-only `startVoting` action/button (visible on the trip overview while `status = PLANNING`) that flips `Trip.status` to `VOTING` — without it, proposing/voting would be permanently unreachable since `createTrip` defaults new trips to `PLANNING`.
+- **`ItineraryItem.order` field added**: §5's conceptual schema only has `dayIndex` on `ItineraryItem`, but §6.5 requires "drag-and-drop reordering within a day" and literally says "persists new dayIndex/order on drop" — `dayIndex` alone can't express relative order among same-day items. Added `order Int @default(0)`; `dayIndex` controls which day group an item belongs to, `order` controls position within that day. Confirmed with the user before adding (a real schema change, per §1's flag-deviations rule).
+- **`dayIndex` is 1-indexed and IS the displayed day number**: no separate "Day N" translation layer — `dayIndex = 1` means "Day 1" directly. Simpler than maintaining a 0-based offset that's always +1'd for display.
+- **`BudgetCategory.expenses` deferred to milestone 6**: §5's schema shows `BudgetCategory.expenses Expense[]`, but `Expense` doesn't exist until milestone 6 — a Prisma relation can't reference a model that isn't defined yet. `BudgetCategory` was added without that field now; it'll be added alongside `Expense` itself in milestone 6 (same incremental pattern used for `Trip.finalDestinationId` in milestone 3/4 and the `User` back-relations added per-milestone). Planned-vs-actual tracking (§6.4) is consequently not yet shown on the budget page — it shows planned amounts and a total only, with a note that actuals arrive in milestone 6.
+- **Itinerary item edit/delete permissions**: §4 doesn't specify who can edit/delete itinerary items (only that "members can add" them). Modeled after the expense-ownership pattern stated elsewhere in §6.6 ("members can only delete/edit their own") — an item's creator or the trip owner can edit/delete it; other members cannot. Reordering (drag-and-drop) is open to any trip member, since it doesn't change content, only display order.
+- **Drag-and-drop without a library**: Implemented with native HTML5 drag-and-drop events (`draggable`, `onDragStart`/`onDragOver`/`onDrop`) rather than adding `dnd-kit`/`react-beautiful-dnd`. Scoped to reordering within a single day's list (matches §6.5's literal "within a day"); moving an item to a different day is done via its Edit form's Day field, not drag-and-drop.
 

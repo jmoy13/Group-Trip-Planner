@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  passwordHash  String?
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+
+  accounts      Account[]
+  sessions      Session[]
+  memberships   TripMembership[]
+  destinationVotes DestinationVote[]
+  dateVotes        DateOptionVote[]
+  itineraryItemsCreated ItineraryItem[] @relation("ItineraryCreator")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Trip {
+  id                 String     @id @default(cuid())
+  name               String
+  description        String?
+  coverImage         String?
+  currency           String     @default("USD") // ISO 4217 code; all amounts on this trip are stored in this currency
+  status             TripStatus @default(PLANNING)
+  finalDestinationId String? // set once voting is finalized
+  finalStartDate     DateTime?
+  finalEndDate       DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  memberships TripMembership[]
+  invitations TripInvitation[]
+  destinations DestinationOption[]
+  dateOptions  DateOption[]
+  budgetCategories BudgetCategory[]
+  itineraryItems   ItineraryItem[]
+}
+
+enum TripStatus {
+  PLANNING
+  VOTING
+  FINALIZED
+  COMPLETED
+  ARCHIVED
+}
+
+model TripMembership {
+  id       String           @id @default(cuid())
+  tripId   String
+  userId   String
+  role     TripRole         @default(MEMBER)
+  status   MembershipStatus @default(ACCEPTED)
+  joinedAt DateTime         @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tripId, userId])
+}
+
+enum TripRole {
+  OWNER
+  MEMBER
+}
+
+enum MembershipStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+}
+
+model TripInvitation {
+  id        String           @id @default(cuid())
+  tripId    String
+  email     String
+  token     String           @unique
+  invitedBy String
+  status    MembershipStatus @default(INVITED)
+  expiresAt DateTime
+  createdAt DateTime         @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model DestinationOption {
+  id         String   @id @default(cuid())
+  tripId     String
+  name       String
+  notes      String?
+  imageUrl   String?
+  proposedBy String
+  createdAt  DateTime @default(now())
+
+  trip  Trip              @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  votes DestinationVote[]
+}
+
+model DestinationVote {
+  id            String   @id @default(cuid())
+  destinationId String
+  userId        String
+  createdAt     DateTime @default(now())
+
+  destination DestinationOption @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([destinationId, userId])
+}
+
+model DateOption {
+  id         String   @id @default(cuid())
+  tripId     String
+  startDate  DateTime
+  endDate    DateTime
+  proposedBy String
+  createdAt  DateTime @default(now())
+
+  trip  Trip             @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  votes DateOptionVote[]
+}
+
+model DateOptionVote {
+  id           String   @id @default(cuid())
+  dateOptionId String
+  userId       String
+  createdAt    DateTime @default(now())
+
+  dateOption DateOption @relation(fields: [dateOptionId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([dateOptionId, userId])
+}
+
+model BudgetCategory {
+  id            String  @id @default(cuid())
+  tripId        String
+  name          String // e.g. "Lodging", "Food", "Activities"
+  plannedAmount Decimal @db.Decimal(10, 2)
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model ItineraryItem {
+  id          String    @id @default(cuid())
+  tripId      String
+  title       String
+  description String?
+  location    String?
+  startTime   DateTime?
+  endTime     DateTime?
+  dayIndex    Int // which day, for grouping
+  order       Int       @default(0) // position within the day, persisted by drag-and-drop
+  createdById String
+  createdAt   DateTime  @default(now())
+
+  trip      Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  createdBy User @relation("ItineraryCreator", fields: [createdById], references: [id])
+}
