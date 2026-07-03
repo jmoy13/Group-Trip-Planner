@@ -24,6 +24,8 @@ model User {
   destinationVotes DestinationVote[]
   dateVotes        DateOptionVote[]
   itineraryItemsCreated ItineraryItem[] @relation("ItineraryCreator")
+  expensesPaid     Expense[]      @relation("ExpensePayer")
+  expenseShares    ExpenseShare[]
 }
 
 model Account {
@@ -81,6 +83,7 @@ model Trip {
   dateOptions  DateOption[]
   budgetCategories BudgetCategory[]
   itineraryItems   ItineraryItem[]
+  expenses         Expense[]
 }
 
 enum TripStatus {
@@ -184,7 +187,8 @@ model BudgetCategory {
   name          String // e.g. "Lodging", "Food", "Activities"
   plannedAmount Decimal @db.Decimal(10, 2)
 
-  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  trip     Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  expenses Expense[]
 }
 
 model ItineraryItem {
@@ -202,4 +206,38 @@ model ItineraryItem {
 
   trip      Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
   createdBy User @relation("ItineraryCreator", fields: [createdById], references: [id])
+}
+
+model Expense {
+  id          String    @id @default(cuid())
+  tripId      String
+  categoryId  String?
+  description String
+  amount      Decimal   @db.Decimal(10, 2)
+  paidById    String
+  splitType   SplitType @default(EQUAL)
+  createdAt   DateTime  @default(now())
+
+  trip     Trip            @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  category BudgetCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  paidBy   User            @relation("ExpensePayer", fields: [paidById], references: [id])
+  shares   ExpenseShare[]
+}
+
+enum SplitType {
+  EQUAL
+  EXACT_AMOUNT
+  PERCENTAGE
+}
+
+model ExpenseShare {
+  id         String  @id @default(cuid())
+  expenseId  String
+  userId     String
+  amountOwed Decimal @db.Decimal(10, 2)
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([expenseId, userId])
 }

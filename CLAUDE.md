@@ -415,9 +415,9 @@ Notes on design decisions baked into this schema:
 3. Trip CRUD + membership + invitation flow (no voting/budget/expenses yet). **Done** — see §10.
 4. Destination & date voting (the unique-constraint-based voting model). **Done** — see §10.
 5. Budget categories + itinerary items (simpler CRUD-with-permissions features). **Done** — see §10.
-6. Expense entry + split calculation + balances + settlement algorithm.
-7. Dashboard page pulling all of the above together.
-8. Polish: empty states, loading states, responsive layout pass, error boundaries.
+6. Expense entry + split calculation + balances + settlement algorithm. **Done** — see §10.
+7. Dashboard page pulling all of the above together. **Done** — see §10.
+8. Polish: empty states, loading states, responsive layout pass, error boundaries. **Done** — see §10.
 
 ---
 
@@ -444,4 +444,9 @@ These were open questions, now resolved — recorded here so the reasoning isn't
 - **`BudgetCategory.expenses` deferred to milestone 6**: §5's schema shows `BudgetCategory.expenses Expense[]`, but `Expense` doesn't exist until milestone 6 — a Prisma relation can't reference a model that isn't defined yet. `BudgetCategory` was added without that field now; it'll be added alongside `Expense` itself in milestone 6 (same incremental pattern used for `Trip.finalDestinationId` in milestone 3/4 and the `User` back-relations added per-milestone). Planned-vs-actual tracking (§6.4) is consequently not yet shown on the budget page — it shows planned amounts and a total only, with a note that actuals arrive in milestone 6.
 - **Itinerary item edit/delete permissions**: §4 doesn't specify who can edit/delete itinerary items (only that "members can add" them). Modeled after the expense-ownership pattern stated elsewhere in §6.6 ("members can only delete/edit their own") — an item's creator or the trip owner can edit/delete it; other members cannot. Reordering (drag-and-drop) is open to any trip member, since it doesn't change content, only display order.
 - **Drag-and-drop without a library**: Implemented with native HTML5 drag-and-drop events (`draggable`, `onDragStart`/`onDragOver`/`onDrop`) rather than adding `dnd-kit`/`react-beautiful-dnd`. Scoped to reordering within a single day's list (matches §6.5's literal "within a day"); moving an item to a different day is done via its Edit form's Day field, not drag-and-drop.
+- **Budget actuals via `groupBy`**: `getBudgetActuals` in `lib/services/budget.ts` uses Prisma's `expense.groupBy({ by: ["categoryId"] })` to get sums per category in one query. The special key `"__uncategorized__"` holds expenses with no category. Both the budget page and dashboard consume this without a separate N+1 per-category query.
+- **Dashboard data fetched in 2 parallel rounds**: core data (trip, membership, members, budget, itinerary, expenses, settlement) all in `Promise.all`; then a conditional second `Promise.all` for voting options — only for VOTING/FINALIZED trips, since destination/date queries are unnecessary during PLANNING.
+- **`loading.tsx` / `error.tsx` placed at `[tripId]` level**: Next.js App Router picks up the closest ancestor's loading/error file. A single `loading.tsx` and `error.tsx` at `app/(dashboard)/trips/[tripId]/` cover the dashboard and all sub-routes (budget, expenses, itinerary, etc.) without requiring a separate file per page. A `loading.tsx` at `app/(dashboard)/trips/` covers the trip list page independently.
+- **`DashboardSection` defined inline in page.tsx**: a plain presentational sub-component with no data fetching of its own, so it lives in the same file rather than a separate `components/` file. If it grows (e.g., sticky header, collapsible), extract it then.
+- **Budget page now shows planned vs actual**: `BudgetCategoryRow` accepts an `actualAmount: number` prop and renders a progress bar (red when over budget). The budget page fetches `getBudgetActuals` in parallel with `listBudgetCategories` and passes actuals down. The old "expense tracking coming soon" placeholder is removed.
 

@@ -52,3 +52,19 @@ export async function deleteBudgetCategory(tripId: string, userId: string, categ
 
   await prisma.budgetCategory.delete({ where: { id: categoryId } });
 }
+
+/** Returns a map of categoryId → actual amount spent (as a plain number). The special key
+ *  `"__uncategorized__"` holds the total of expenses with no category. */
+export async function getBudgetActuals(tripId: string, userId: string) {
+  await requireTripMembership(tripId, userId);
+  const rows = await prisma.expense.groupBy({
+    by: ["categoryId"],
+    where: { tripId },
+    _sum: { amount: true },
+  });
+  return rows.reduce((map, row) => {
+    const key = row.categoryId ?? "__uncategorized__";
+    map.set(key, row._sum.amount?.toNumber() ?? 0);
+    return map;
+  }, new Map<string, number>());
+}

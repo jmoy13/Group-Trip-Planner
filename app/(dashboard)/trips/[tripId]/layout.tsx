@@ -45,6 +45,9 @@ export default async function TripLayout({ children, params }: TripLayoutProps) 
           <Link href={`/trips/${tripId}/itinerary`} className="hover:text-zinc-900">
             Itinerary
           </Link>
+          <Link href={`/trips/${tripId}/expenses`} className="hover:text-zinc-900">
+            Expenses
+          </Link>
           <Link href={`/trips/${tripId}/members`} className="hover:text-zinc-900">
             Members
           </Link>
