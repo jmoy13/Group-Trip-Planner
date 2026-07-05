@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getTripMembership } from "@/lib/auth/permissions";
+import { getTripForMember } from "@/lib/services/trips";
 import { listItineraryItems } from "@/lib/services/itinerary";
 import { ItineraryDayGroup } from "@/components/itinerary/ItineraryDayGroup";
 import { CreateItineraryItemForm } from "@/components/itinerary/CreateItineraryItemForm";
@@ -11,6 +13,20 @@ interface ItineraryPageProps {
 export default async function ItineraryPage({ params }: ItineraryPageProps) {
   const { tripId } = await params;
   const user = await getCurrentUser();
+  const trip = await getTripForMember(tripId, user!.id);
+
+  if (trip.status === "PLANNING" || trip.status === "VOTING") {
+    return (
+      <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        Itinerary unlocks once the destination and dates are finalized —{" "}
+        <Link href={`/trips/${tripId}/destinations`} className="underline">
+          go vote
+        </Link>
+        .
+      </div>
+    );
+  }
+
   const [membership, items] = await Promise.all([
     getTripMembership(tripId, user!.id),
     listItineraryItems(tripId, user!.id),

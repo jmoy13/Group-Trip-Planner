@@ -21,7 +21,7 @@ export function ProposeDestinationForm({ tripId }: { tripId: string }) {
           id="notes"
           name="notes"
           rows={2}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-400"
+          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
         />
       </div>
       <Input id="imageUrl" name="imageUrl" label="Image URL (optional)" placeholder="https://…" />

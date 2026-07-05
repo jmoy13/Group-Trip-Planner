@@ -47,6 +47,33 @@ export function getInvitationByToken(token: string) {
   });
 }
 
+/** Pending, unexpired invitations addressed to this email — the in-app "Invites" inbox. */
+export function listPendingInvitationsForUser(email: string) {
+  return prisma.tripInvitation.findMany({
+    where: { email, status: "INVITED", expiresAt: { gt: new Date() } },
+    include: { trip: { select: { id: true, name: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function declineInvitation(token: string, userEmail: string) {
+  const invitation = await getInvitationByToken(token);
+  if (!invitation) throw new PermissionError("This invitation link is invalid.");
+  if (invitation.status !== "INVITED") {
+    throw new PermissionError("This invitation has already been used.");
+  }
+  if (invitation.email !== userEmail) {
+    throw new PermissionError(
+      `This invitation was sent to ${invitation.email}. Sign in with that email to decline it.`
+    );
+  }
+
+  await prisma.tripInvitation.update({
+    where: { id: invitation.id },
+    data: { status: "DECLINED" },
+  });
+}
+
 export async function acceptInvitation(token: string, userId: string, userEmail: string) {
   const invitation = await getInvitationByToken(token);
   if (!invitation) throw new PermissionError("This invitation link is invalid.");

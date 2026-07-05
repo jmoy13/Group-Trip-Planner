@@ -45,3 +45,19 @@ export async function requireTripOwner(tripId: string, userId: string) {
   }
   return membership;
 }
+
+const FINALIZED_STATUSES = new Set(["FINALIZED", "COMPLETED", "ARCHIVED"]);
+
+/** Throws unless the trip's destination/dates have been finalized (budget, itinerary, and
+ *  expenses only make sense once the group has committed to where and when). */
+export async function requireTripFinalized(tripId: string, userId: string) {
+  await requireTripMembership(tripId, userId);
+
+  const trip = await prisma.trip.findUnique({ where: { id: tripId }, select: { status: true } });
+  if (!trip) throw new PermissionError("Trip not found.");
+  if (!FINALIZED_STATUSES.has(trip.status)) {
+    throw new PermissionError(
+      "This trip's destination and dates haven't been finalized yet."
+    );
+  }
+}

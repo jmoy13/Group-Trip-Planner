@@ -1,7 +1,7 @@
 import "server-only";
 import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { PermissionError, requireTripMembership } from "@/lib/auth/permissions";
+import { PermissionError, requireTripFinalized, requireTripMembership } from "@/lib/auth/permissions";
 import type { CreateExpenseInput, UpdateExpenseInput } from "@/lib/validation/expenses";
 import {
   distributeCentsByWeights,
@@ -71,6 +71,7 @@ async function buildParticipantShares(
 
 export async function createExpense(tripId: string, userId: string, input: CreateExpenseInput) {
   await requireTripMembership(tripId, userId);
+  await requireTripFinalized(tripId, userId);
 
   const rows = await prisma.tripMembership.findMany({
     where: { tripId, status: "ACCEPTED" },

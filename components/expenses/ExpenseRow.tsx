@@ -259,7 +259,7 @@ function EditForm({
             id={`paidBy-${expenseId}`}
             name="paidById"
             defaultValue={initialPaidById}
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-400"
+            className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
           >
             {members.map((m) => (
               <option key={m.id} value={m.id}>
@@ -276,7 +276,7 @@ function EditForm({
             id={`cat-${expenseId}`}
             name="categoryId"
             defaultValue={initialCategoryId ?? ""}
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-400"
+            className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
           >
             <option value="">None</option>
             {categories.map((c) => (
@@ -328,7 +328,7 @@ function EditForm({
                   onChange={(e) =>
                     setExactAmounts((prev) => ({ ...prev, [member.id]: e.target.value }))
                   }
-                  className="w-28 rounded-md border border-zinc-300 px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-zinc-400"
+                  className="w-28 rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
                 />
               )}
               {splitType === "PERCENTAGE" && selectedParticipants.has(member.id) && (
@@ -340,7 +340,7 @@ function EditForm({
                     onChange={(e) =>
                       setPercentages((prev) => ({ ...prev, [member.id]: e.target.value }))
                     }
-                    className="w-16 rounded-md border border-zinc-300 px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-zinc-400"
+                    className="w-16 rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
                   />
                   <span className="text-xs text-zinc-400">%</span>
                 </div>

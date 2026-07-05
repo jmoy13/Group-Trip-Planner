@@ -1,7 +1,12 @@
 import "server-only";
 import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { PermissionError, requireTripMembership, requireTripOwner } from "@/lib/auth/permissions";
+import {
+  PermissionError,
+  requireTripFinalized,
+  requireTripMembership,
+  requireTripOwner,
+} from "@/lib/auth/permissions";
 import type { CreateBudgetCategoryInput, UpdateBudgetCategoryInput } from "@/lib/validation/budget";
 
 export async function listBudgetCategories(tripId: string, userId: string) {
@@ -18,6 +23,7 @@ export async function createBudgetCategory(
   input: CreateBudgetCategoryInput
 ) {
   await requireTripOwner(tripId, userId);
+  await requireTripFinalized(tripId, userId);
   return prisma.budgetCategory.create({
     data: {
       tripId,

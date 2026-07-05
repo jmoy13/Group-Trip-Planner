@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { signInAction } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -26,6 +27,12 @@ export function SignInForm({ callbackUrl, defaultEmail }: SignInFormProps) {
         required
       />
       <Input id="password" name="password" type="password" label="Password" required />
+      <Link
+        href="/forgot-password"
+        className="-mt-2 self-end text-sm font-medium text-zinc-900 hover:underline"
+      >
+        Forgot password?
+      </Link>
       {state?.success === false && <p className="text-sm text-red-600">{state.error}</p>}
       <Button type="submit" disabled={pending}>
         {pending ? "Signing in…" : "Sign in"}

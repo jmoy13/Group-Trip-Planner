@@ -2,9 +2,21 @@
 
 import { redirect } from "next/navigation";
 import { signIn as authSignIn, signOut as authSignOut } from "@/auth";
-import { createDatabaseSession, hashPassword, verifyPassword } from "@/lib/auth/credentials";
+import {
+  createDatabaseSession,
+  createPasswordResetToken,
+  hashPassword,
+  resetPassword,
+  verifyPassword,
+} from "@/lib/auth/credentials";
+import { sendPasswordResetEmail } from "@/lib/services/email";
 import { prisma } from "@/lib/db";
-import { SignInSchema, SignUpSchema } from "@/lib/validation/auth";
+import {
+  ForgotPasswordSchema,
+  ResetPasswordSchema,
+  SignInSchema,
+  SignUpSchema,
+} from "@/lib/validation/auth";
 
 type ActionResult = { success: true } | { success: false; error: string };
 
@@ -67,6 +79,46 @@ export async function signInAction(
 
   await createDatabaseSession(user.id);
   redirect(resolveCallbackUrl(formData));
+}
+
+export async function forgotPasswordAction(
+  _prevState: ActionResult | undefined,
+  formData: FormData
+): Promise<ActionResult> {
+  const parsed = ForgotPasswordSchema.safeParse({ email: formData.get("email") });
+
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const token = await createPasswordResetToken(parsed.data.email);
+  if (token) {
+    await sendPasswordResetEmail({ to: parsed.data.email, token });
+  }
+
+  // Always report success, whether or not an account exists for this email —
+  // otherwise this form becomes an account-enumeration oracle.
+  return { success: true };
+}
+
+export async function resetPasswordAction(
+  token: string,
+  _prevState: ActionResult | undefined,
+  formData: FormData
+): Promise<ActionResult> {
+  const parsed = ResetPasswordSchema.safeParse({ password: formData.get("password") });
+
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const result = await resetPassword(token, parsed.data.password);
+  if (!result.success) {
+    return { success: false, error: result.error };
+  }
+
+  await createDatabaseSession(result.userId);
+  redirect("/trips");
 }
 
 export async function signInWithGoogleAction(formData: FormData) {

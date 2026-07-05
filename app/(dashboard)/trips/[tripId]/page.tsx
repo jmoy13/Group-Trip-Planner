@@ -78,6 +78,8 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
     ]);
 
   const isOwner = membership?.role === "OWNER";
+  const isFinalized =
+    trip.status === "FINALIZED" || trip.status === "COMPLETED" || trip.status === "ARCHIVED";
 
   // Voting data only needed for VOTING / FINALIZED states
   let destinationOptions: Awaited<ReturnType<typeof listDestinationOptions>> = [];
@@ -200,46 +202,48 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
       )}
 
       {/* Budget + Members */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <DashboardSection title="Budget" href={`/trips/${tripId}/budget`}>
-          {categories.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500">
-              No budget categories yet —{" "}
-              {isOwner ? (
-                <Link href={`/trips/${tripId}/budget`} className="underline">
-                  add one
-                </Link>
-              ) : (
-                "ask the trip owner to add one"
-              )}
-            </div>
-          ) : (
-            <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
-              {categories.map((cat) => {
-                const planned = cat.plannedAmount.toNumber();
-                const actual = actuals.get(cat.id) ?? 0;
-                const pct = planned > 0 ? Math.min(100, (actual / planned) * 100) : 0;
-                return (
-                  <li key={cat.id} className="flex flex-col gap-1.5 px-4 py-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-zinc-900">{cat.name}</span>
-                      <span className="text-xs text-zinc-500">
-                        {trip.currency} {actual.toFixed(2)}{" "}
-                        <span className="text-zinc-400">/ {planned.toFixed(2)}</span>
-                      </span>
-                    </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-zinc-100">
-                      <div
-                        className={`h-full rounded-full transition-all ${pct >= 100 ? "bg-red-500" : "bg-zinc-900"}`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </DashboardSection>
+      <div className={isFinalized ? "grid grid-cols-1 gap-6 md:grid-cols-2" : undefined}>
+        {isFinalized && (
+          <DashboardSection title="Budget" href={`/trips/${tripId}/budget`}>
+            {categories.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500">
+                No budget categories yet —{" "}
+                {isOwner ? (
+                  <Link href={`/trips/${tripId}/budget`} className="underline">
+                    add one
+                  </Link>
+                ) : (
+                  "ask the trip owner to add one"
+                )}
+              </div>
+            ) : (
+              <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+                {categories.map((cat) => {
+                  const planned = cat.plannedAmount.toNumber();
+                  const actual = actuals.get(cat.id) ?? 0;
+                  const pct = planned > 0 ? Math.min(100, (actual / planned) * 100) : 0;
+                  return (
+                    <li key={cat.id} className="flex flex-col gap-1.5 px-4 py-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-zinc-900">{cat.name}</span>
+                        <span className="text-xs text-zinc-500">
+                          {trip.currency} {actual.toFixed(2)}{" "}
+                          <span className="text-zinc-400">/ {planned.toFixed(2)}</span>
+                        </span>
+                      </div>
+                      <div className="h-1.5 overflow-hidden rounded-full bg-zinc-100">
+                        <div
+                          className={`h-full rounded-full transition-all ${pct >= 100 ? "bg-red-500" : "bg-zinc-900"}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </DashboardSection>
+        )}
 
         <DashboardSection title="Members" href={`/trips/${tripId}/members`} hrefLabel="Manage →">
           <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
@@ -262,94 +266,102 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
         </DashboardSection>
       </div>
 
-      {/* Recent expenses + Settlement */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <DashboardSection title="Recent expenses" href={`/trips/${tripId}/expenses`}>
-          {recentExpenses.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500">
-              No expenses yet —{" "}
-              <Link href={`/trips/${tripId}/expenses`} className="underline">
-                add the first one
-              </Link>
-            </div>
-          ) : (
-            <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
-              {recentExpenses.map((e) => (
-                <li key={e.id} className="flex items-center justify-between px-4 py-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm text-zinc-900">{e.description}</p>
-                    <p className="text-xs text-zinc-400">
-                      Paid by {e.paidBy.name ?? "Unknown"}
-                    </p>
-                  </div>
-                  <span className="ml-3 shrink-0 text-sm font-medium text-zinc-900">
-                    {trip.currency} {e.amount.toFixed(2)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </DashboardSection>
-
-        <DashboardSection title="Settlement">
-          {settlement.length === 0 ? (
-            <div className="rounded-lg border border-zinc-200 p-4 text-center text-sm text-zinc-500">
-              {expenses.length === 0 ? "No expenses yet" : "All settled up ✓"}
-            </div>
-          ) : (
-            <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
-              {settlement.map((t, i) => (
-                <li key={i} className="flex items-center justify-between px-4 py-3 text-sm">
-                  <span>
-                    <span className="font-medium text-zinc-900">{t.fromName ?? t.fromUserId}</span>
-                    <span className="text-zinc-400"> → </span>
-                    <span className="font-medium text-zinc-900">{t.toName ?? t.toUserId}</span>
-                  </span>
-                  <span className="ml-3 shrink-0 font-medium text-zinc-900">
-                    {trip.currency} {(t.amountCents / 100).toFixed(2)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </DashboardSection>
-      </div>
-
-      {/* Upcoming itinerary */}
-      <DashboardSection title="Itinerary" href={`/trips/${tripId}/itinerary`}>
-        {upcomingItems.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500">
-            No itinerary items yet —{" "}
-            <Link href={`/trips/${tripId}/itinerary`} className="underline">
-              plan your days
-            </Link>
-          </div>
-        ) : (
-          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
-            {upcomingItems.map((item) => (
-              <li key={item.id} className="flex items-start gap-4 px-4 py-3">
-                <span className="shrink-0 rounded bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700">
-                  Day {item.dayIndex}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-zinc-900">{item.title}</p>
-                  {item.location && (
-                    <p className="truncate text-xs text-zinc-400">{item.location}</p>
-                  )}
+      {isFinalized && (
+        <>
+          {/* Recent expenses + Settlement */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <DashboardSection title="Recent expenses" href={`/trips/${tripId}/expenses`}>
+              {recentExpenses.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500">
+                  No expenses yet —{" "}
+                  <Link href={`/trips/${tripId}/expenses`} className="underline">
+                    add the first one
+                  </Link>
                 </div>
-                {item.startTime && (
-                  <span className="shrink-0 text-xs text-zinc-400">
-                    {new Intl.DateTimeFormat("en-US", {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    }).format(item.startTime)}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </DashboardSection>
+              ) : (
+                <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+                  {recentExpenses.map((e) => (
+                    <li key={e.id} className="flex items-center justify-between px-4 py-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm text-zinc-900">{e.description}</p>
+                        <p className="text-xs text-zinc-400">
+                          Paid by {e.paidBy.name ?? "Unknown"}
+                        </p>
+                      </div>
+                      <span className="ml-3 shrink-0 text-sm font-medium text-zinc-900">
+                        {trip.currency} {e.amount.toFixed(2)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </DashboardSection>
+
+            <DashboardSection title="Settlement">
+              {settlement.length === 0 ? (
+                <div className="rounded-lg border border-zinc-200 p-4 text-center text-sm text-zinc-500">
+                  {expenses.length === 0 ? "No expenses yet" : "All settled up ✓"}
+                </div>
+              ) : (
+                <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+                  {settlement.map((t, i) => (
+                    <li key={i} className="flex items-center justify-between px-4 py-3 text-sm">
+                      <span>
+                        <span className="font-medium text-zinc-900">
+                          {t.fromName ?? t.fromUserId}
+                        </span>
+                        <span className="text-zinc-400"> → </span>
+                        <span className="font-medium text-zinc-900">
+                          {t.toName ?? t.toUserId}
+                        </span>
+                      </span>
+                      <span className="ml-3 shrink-0 font-medium text-zinc-900">
+                        {trip.currency} {(t.amountCents / 100).toFixed(2)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </DashboardSection>
+          </div>
+
+          {/* Upcoming itinerary */}
+          <DashboardSection title="Itinerary" href={`/trips/${tripId}/itinerary`}>
+            {upcomingItems.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500">
+                No itinerary items yet —{" "}
+                <Link href={`/trips/${tripId}/itinerary`} className="underline">
+                  plan your days
+                </Link>
+              </div>
+            ) : (
+              <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+                {upcomingItems.map((item) => (
+                  <li key={item.id} className="flex items-start gap-4 px-4 py-3">
+                    <span className="shrink-0 rounded bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700">
+                      Day {item.dayIndex}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-zinc-900">{item.title}</p>
+                      {item.location && (
+                        <p className="truncate text-xs text-zinc-400">{item.location}</p>
+                      )}
+                    </div>
+                    {item.startTime && (
+                      <span className="shrink-0 text-xs text-zinc-400">
+                        {new Intl.DateTimeFormat("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                        }).format(item.startTime)}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </DashboardSection>
+        </>
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { getServerSession } from "@/lib/auth/session";
 import { getInvitationByToken } from "@/lib/services/invitations";
-import { acceptInvitationAction } from "@/app/invite/actions";
+import { acceptInvitationAction, declineInvitationAction } from "@/app/invite/actions";
 
 interface InvitePageProps {
   params: Promise<{ token: string }>;
@@ -80,10 +80,18 @@ export default async function InvitePage({ params }: InvitePageProps) {
         Join <span className="font-medium text-zinc-700">{invitation.trip.name}</span> as a
         member.
       </p>
-      <form action={acceptInvitationAction}>
-        <input type="hidden" name="token" value={token} />
-        <Button type="submit">Accept invitation</Button>
-      </form>
+      <div className="flex flex-col gap-2">
+        <form action={acceptInvitationAction}>
+          <input type="hidden" name="token" value={token} />
+          <Button type="submit">Accept invitation</Button>
+        </form>
+        <form action={declineInvitationAction}>
+          <input type="hidden" name="token" value={token} />
+          <Button type="submit" variant="secondary">
+            Decline
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

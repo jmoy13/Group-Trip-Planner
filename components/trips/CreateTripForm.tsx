@@ -19,7 +19,7 @@ export function CreateTripForm() {
           id="description"
           name="description"
           rows={3}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-400"
+          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
         />
       </div>
       <div className="flex flex-col gap-1">
@@ -30,7 +30,7 @@ export function CreateTripForm() {
           id="currency"
           name="currency"
           defaultValue="USD"
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-400"
+          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
         >
           <option value="USD">USD — US Dollar</option>
           <option value="EUR">EUR — Euro</option>

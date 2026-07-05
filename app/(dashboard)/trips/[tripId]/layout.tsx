@@ -20,6 +20,9 @@ export default async function TripLayout({ children, params }: TripLayoutProps) 
   const trip = await getTripForMember(tripId, user.id).catch(() => null);
   if (!trip) notFound();
 
+  const isFinalized =
+    trip.status === "FINALIZED" || trip.status === "COMPLETED" || trip.status === "ARCHIVED";
+
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-200 pb-4">
@@ -39,15 +42,19 @@ export default async function TripLayout({ children, params }: TripLayoutProps) 
           <Link href={`/trips/${tripId}/dates`} className="hover:text-zinc-900">
             Dates
           </Link>
-          <Link href={`/trips/${tripId}/budget`} className="hover:text-zinc-900">
-            Budget
-          </Link>
-          <Link href={`/trips/${tripId}/itinerary`} className="hover:text-zinc-900">
-            Itinerary
-          </Link>
-          <Link href={`/trips/${tripId}/expenses`} className="hover:text-zinc-900">
-            Expenses
-          </Link>
+          {isFinalized && (
+            <>
+              <Link href={`/trips/${tripId}/budget`} className="hover:text-zinc-900">
+                Budget
+              </Link>
+              <Link href={`/trips/${tripId}/itinerary`} className="hover:text-zinc-900">
+                Itinerary
+              </Link>
+              <Link href={`/trips/${tripId}/expenses`} className="hover:text-zinc-900">
+                Expenses
+              </Link>
+            </>
+          )}
           <Link href={`/trips/${tripId}/members`} className="hover:text-zinc-900">
             Members
           </Link>

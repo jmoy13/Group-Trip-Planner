@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/db";
-import { PermissionError, requireTripMembership } from "@/lib/auth/permissions";
+import { PermissionError, requireTripFinalized, requireTripMembership } from "@/lib/auth/permissions";
 import type { CreateItineraryItemInput, UpdateItineraryItemInput } from "@/lib/validation/itinerary";
 
 export async function listItineraryItems(tripId: string, userId: string) {
@@ -18,6 +18,7 @@ export async function createItineraryItem(
   input: CreateItineraryItemInput
 ) {
   await requireTripMembership(tripId, userId);
+  await requireTripFinalized(tripId, userId);
 
   const lastInDay = await prisma.itineraryItem.findFirst({
     where: { tripId, dayIndex: input.dayIndex },

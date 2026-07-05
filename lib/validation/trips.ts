@@ -22,7 +22,7 @@ export const UpdateTripSchema = CreateTripSchema;
 export type UpdateTripInput = z.infer<typeof UpdateTripSchema>;
 
 export const InviteMemberSchema = z.object({
-  email: z.email({ error: "Please enter a valid email." }).trim(),
+  email: z.email({ error: "Please enter a valid email." }).trim().toLowerCase(),
 });
 
 export type InviteMemberInput = z.infer<typeof InviteMemberSchema>;
