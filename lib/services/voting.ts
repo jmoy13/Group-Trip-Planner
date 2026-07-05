@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { PermissionError, requireTripMembership, requireTripOwner } from "@/lib/auth/permissions";
+import { geocodeLocation } from "@/lib/services/geocoding";
 import type {
   FinalizeTripInput,
   ProposeDateOptionInput,
@@ -30,12 +31,17 @@ export async function proposeDestination(
   await requireTripMembership(tripId, userId);
   await requireVotingPhase(tripId);
 
+  // Best-effort: a failed/ambiguous lookup just means no map pin, not a blocked proposal.
+  const coords = await geocodeLocation(input.name);
+
   return prisma.destinationOption.create({
     data: {
       tripId,
       name: input.name,
       notes: input.notes,
       imageUrl: input.imageUrl,
+      latitude: coords?.latitude,
+      longitude: coords?.longitude,
       proposedBy: userId,
     },
   });

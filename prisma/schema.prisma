@@ -138,6 +138,8 @@ model DestinationOption {
   name       String
   notes      String?
   imageUrl   String?
+  latitude   Float?
+  longitude  Float?
   proposedBy String
   createdAt  DateTime @default(now())
 

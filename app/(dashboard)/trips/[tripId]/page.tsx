@@ -8,6 +8,7 @@ import { listItineraryItems } from "@/lib/services/itinerary";
 import * as expenseService from "@/lib/services/expenses";
 import { StartVotingButton } from "@/components/voting/StartVotingButton";
 import { FinalizeTripPanel } from "@/components/voting/FinalizeTripPanel";
+import { DestinationsMapLoader } from "@/components/voting/DestinationsMapLoader";
 
 interface TripOverviewPageProps {
   params: Promise<{ tripId: string }>;
@@ -94,6 +95,22 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
   const finalizedDestinationName = trip.finalDestinationId
     ? (destinationOptions.find((o) => o.id === trip.finalDestinationId)?.name ?? null)
     : null;
+
+  // While voting is still open there's no finalized pick yet, so highlight whichever
+  // option currently has the most votes instead.
+  const highlightedDestinationId =
+    trip.finalDestinationId ??
+    destinationOptions.reduce<{ id: string; votes: number } | null>((leader, o) => {
+      if (o.votes.length === 0) return leader;
+      if (!leader || o.votes.length > leader.votes) return { id: o.id, votes: o.votes.length };
+      return leader;
+    }, null)?.id ??
+    null;
+
+  // Once voting is over, the map should only plot the winning destination, not every option.
+  const mapDestinationOptions = isFinalized
+    ? destinationOptions.filter((o) => o.id === trip.finalDestinationId)
+    : destinationOptions;
 
   const totalPlanned = categories.reduce((s, c) => s + c.plannedAmount.toNumber(), 0);
   const totalSpent = expenses.reduce((s, e) => s + e.amount.toNumber(), 0);
@@ -199,6 +216,23 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
             />
           )}
         </div>
+      )}
+
+      {/* Destination map — only meaningful once there's something to plot */}
+      {trip.status !== "PLANNING" && destinationOptions.length > 0 && (
+        <DashboardSection title="Destination map" href={`/trips/${tripId}/destinations`}>
+          <DestinationsMapLoader
+            destinations={mapDestinationOptions.map((o) => ({
+              id: o.id,
+              name: o.name,
+              latitude: o.latitude,
+              longitude: o.longitude,
+              voteCount: o.votes.length,
+            }))}
+            highlightId={highlightedDestinationId}
+            heightClassName="h-56"
+          />
+        </DashboardSection>
       )}
 
       {/* Budget + Members */}
