@@ -29,7 +29,7 @@ export function SignInForm({ callbackUrl, defaultEmail }: SignInFormProps) {
       <Input id="password" name="password" type="password" label="Password" required />
       <Link
         href="/forgot-password"
-        className="-mt-2 self-end text-sm font-medium text-zinc-900 hover:underline"
+        className="-mt-2 self-end text-sm font-medium text-sage-900 hover:underline"
       >
         Forgot password?
       </Link>

@@ -9,9 +9,9 @@ export function ProposeDateForm({ tripId }: { tripId: string }) {
   const [state, action, pending] = useActionState(proposeDateAction, undefined);
 
   return (
-    <form action={action} className="flex flex-col gap-3 rounded-lg border border-zinc-200 p-4">
+    <form action={action} className="flex flex-col gap-3 rounded-lg border border-sage-200 p-4">
       <input type="hidden" name="tripId" value={tripId} />
-      <h3 className="font-medium text-zinc-900">Propose dates</h3>
+      <h3 className="font-medium text-sage-900">Propose dates</h3>
       <div className="flex gap-3">
         <DatePicker id="startDate" name="startDate" label="Start date" required />
         <DatePicker id="endDate" name="endDate" label="End date" required />

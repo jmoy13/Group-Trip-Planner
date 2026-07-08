@@ -11,6 +11,19 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Brand palette — a green ramp from Frosted Mint to Dusty Olive. 50/700/800/900
+     extend the given 100-600 stops to cover full-contrast text and subtle tints. */
+  --color-sage-50: #f3faec;
+  --color-sage-100: #e9f5db; /* Frosted Mint */
+  --color-sage-200: #cfe1b9; /* Tea Green */
+  --color-sage-300: #b5c99a; /* Muted Olive */
+  --color-sage-400: #97a97c; /* Palm Leaf */
+  --color-sage-500: #87986a; /* Palm Leaf */
+  --color-sage-600: #718355; /* Dusty Olive */
+  --color-sage-700: #596c3a;
+  --color-sage-800: #455924;
+  --color-sage-900: #334810;
 }
 
 body {

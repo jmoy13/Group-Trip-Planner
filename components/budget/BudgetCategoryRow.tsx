@@ -78,18 +78,18 @@ export function BudgetCategoryRow({
   return (
     <li className="flex flex-col gap-2 px-4 py-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-zinc-900">{name}</p>
+        <p className="text-sm font-medium text-sage-900">{name}</p>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-sage-500">
             {currency} {actualAmount.toFixed(2)}{" "}
-            <span className="text-zinc-400">/ {plannedAmount}</span>
+            <span className="text-sage-400">/ {plannedAmount}</span>
           </span>
           {canManage && (
             <>
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="text-xs text-zinc-600 hover:underline"
+                className="text-xs text-sage-600 hover:underline"
               >
                 Edit
               </button>
@@ -104,9 +104,9 @@ export function BudgetCategoryRow({
           )}
         </div>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-zinc-100">
+      <div className="h-1.5 overflow-hidden rounded-full bg-sage-100">
         <div
-          className={`h-full rounded-full transition-all ${overBudget ? "bg-red-500" : "bg-zinc-900"}`}
+          className={`h-full rounded-full transition-all ${overBudget ? "bg-red-500" : "bg-sage-900"}`}
           style={{ width: `${pct}%` }}
         />
       </div>

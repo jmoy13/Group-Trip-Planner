@@ -11,16 +11,16 @@ export default async function TripsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-zinc-900">Your trips</h1>
+        <h1 className="text-lg font-semibold text-sage-900">Your trips</h1>
         <Link href="/trips/new">
           <Button className="w-auto">New trip</Button>
         </Link>
       </div>
 
       {trips.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-300 py-16 text-center">
-          <h2 className="font-medium text-zinc-900">No trips yet</h2>
-          <p className="max-w-sm text-sm text-zinc-500">
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-sage-300 py-16 text-center">
+          <h2 className="font-medium text-sage-900">No trips yet</h2>
+          <p className="max-w-sm text-sm text-sage-500">
             Create a trip to start voting on destinations and dates with your group.
           </p>
           <Link href="/trips/new" className="mt-2">

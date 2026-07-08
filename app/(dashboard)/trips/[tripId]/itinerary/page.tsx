@@ -17,7 +17,7 @@ export default async function ItineraryPage({ params }: ItineraryPageProps) {
 
   if (trip.status === "PLANNING" || trip.status === "VOTING") {
     return (
-      <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+      <div className="rounded-lg border border-dashed border-sage-300 p-6 text-center text-sm text-sage-500">
         Itinerary unlocks once the destination and dates are finalized —{" "}
         <Link href={`/trips/${tripId}/destinations`} className="underline">
           go vote
@@ -38,10 +38,10 @@ export default async function ItineraryPage({ params }: ItineraryPageProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="font-medium text-zinc-900">Itinerary</h2>
+      <h2 className="font-medium text-sage-900">Itinerary</h2>
 
       {items.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        <div className="rounded-lg border border-dashed border-sage-300 p-6 text-center text-sm text-sage-500">
           No itinerary items yet — add the first one.
         </div>
       ) : (

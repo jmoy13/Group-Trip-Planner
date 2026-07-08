@@ -21,19 +21,19 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-zinc-900">Create an account</h1>
-        <p className="text-sm text-zinc-500">Start planning a trip with your group.</p>
+        <h1 className="text-xl font-semibold text-sage-900">Create an account</h1>
+        <p className="text-sm text-sage-500">Start planning a trip with your group.</p>
       </div>
       <SignUpForm callbackUrl={callbackUrl} defaultEmail={email} />
-      <div className="flex items-center gap-3 text-xs text-zinc-400">
-        <div className="h-px flex-1 bg-zinc-200" />
+      <div className="flex items-center gap-3 text-xs text-sage-400">
+        <div className="h-px flex-1 bg-sage-200" />
         or
-        <div className="h-px flex-1 bg-zinc-200" />
+        <div className="h-px flex-1 bg-sage-200" />
       </div>
       <GoogleSignInButton callbackUrl={callbackUrl} />
-      <p className="text-center text-sm text-zinc-500">
+      <p className="text-center text-sm text-sage-500">
         Already have an account?{" "}
-        <Link href={signInHref} className="font-medium text-zinc-900 hover:underline">
+        <Link href={signInHref} className="font-medium text-sage-900 hover:underline">
           Sign in
         </Link>
       </p>

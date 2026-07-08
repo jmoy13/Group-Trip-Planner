@@ -20,7 +20,7 @@ export default async function ExpensesPage({ params }: ExpensesPageProps) {
 
   if (trip.status === "PLANNING" || trip.status === "VOTING") {
     return (
-      <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+      <div className="rounded-lg border border-dashed border-sage-300 p-6 text-center text-sm text-sage-500">
         Expenses unlock once the destination and dates are finalized —{" "}
         <Link href={`/trips/${tripId}/destinations`} className="underline">
           go vote
@@ -56,14 +56,14 @@ export default async function ExpensesPage({ params }: ExpensesPageProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="font-medium text-zinc-900">Expenses</h2>
+      <h2 className="font-medium text-sage-900">Expenses</h2>
 
       {expenses.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        <div className="rounded-lg border border-dashed border-sage-300 p-6 text-center text-sm text-sage-500">
           No expenses recorded yet — add the first one below.
         </div>
       ) : (
-        <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+        <ul className="divide-y divide-sage-200 rounded-lg border border-sage-200">
           {expenses.map((expense) => (
             <ExpenseRow
               key={expense.id}
@@ -98,11 +98,11 @@ export default async function ExpensesPage({ params }: ExpensesPageProps) {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="flex flex-col gap-3">
-          <h3 className="text-sm font-medium text-zinc-700">Balances</h3>
+          <h3 className="text-sm font-medium text-sage-700">Balances</h3>
           <BalancesPanel currency={trip.currency} balances={balances} />
         </div>
         <div className="flex flex-col gap-3">
-          <h3 className="text-sm font-medium text-zinc-700">Settlement</h3>
+          <h3 className="text-sm font-medium text-sage-700">Settlement</h3>
           <SettlementPanel currency={trip.currency} transactions={settlement} />
         </div>
       </div>

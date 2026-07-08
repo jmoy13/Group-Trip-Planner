@@ -23,11 +23,11 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  PLANNING: "bg-zinc-100 text-zinc-600",
+  PLANNING: "bg-sage-100 text-sage-600",
   VOTING: "bg-blue-50 text-blue-700",
   FINALIZED: "bg-emerald-50 text-emerald-700",
   COMPLETED: "bg-emerald-50 text-emerald-700",
-  ARCHIVED: "bg-zinc-100 text-zinc-500",
+  ARCHIVED: "bg-sage-100 text-sage-500",
 };
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
@@ -50,9 +50,9 @@ function DashboardSection({
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-zinc-700">{title}</h3>
+        <h3 className="text-sm font-medium text-sage-700">{title}</h3>
         {href && (
-          <Link href={href} className="text-xs text-zinc-400 hover:text-zinc-700 hover:underline">
+          <Link href={href} className="text-xs text-sage-400 hover:text-sage-700 hover:underline">
             {hrefLabel}
           </Link>
         )}
@@ -120,20 +120,20 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
   return (
     <div className="flex flex-col gap-6">
       {/* Trip summary header */}
-      <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-zinc-200 p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-sage-200 p-4">
         <div className="flex flex-col gap-2">
-          {trip.description && <p className="text-sm text-zinc-500">{trip.description}</p>}
+          {trip.description && <p className="text-sm text-sage-500">{trip.description}</p>}
           <div className="flex flex-wrap items-center gap-2">
             <span
-              className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[trip.status] ?? "bg-zinc-100 text-zinc-600"}`}
+              className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[trip.status] ?? "bg-sage-100 text-sage-600"}`}
             >
               {STATUS_LABELS[trip.status] ?? trip.status}
             </span>
             {finalizedDestinationName && (
-              <span className="text-sm font-medium text-zinc-900">{finalizedDestinationName}</span>
+              <span className="text-sm font-medium text-sage-900">{finalizedDestinationName}</span>
             )}
             {trip.finalStartDate && trip.finalEndDate && (
-              <span className="text-sm text-zinc-500">
+              <span className="text-sm text-sage-500">
                 {dateFormatter.format(trip.finalStartDate)} –{" "}
                 {dateFormatter.format(trip.finalEndDate)}
               </span>
@@ -141,12 +141,12 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
           </div>
         </div>
         <div className="text-right text-sm">
-          <p className="text-zinc-400">Total spent</p>
-          <p className="font-medium text-zinc-900">
+          <p className="text-sage-400">Total spent</p>
+          <p className="font-medium text-sage-900">
             {trip.currency} {totalSpent.toFixed(2)}
           </p>
           {totalPlanned > 0 && (
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-sage-400">
               of {trip.currency} {totalPlanned.toFixed(2)} planned
             </p>
           )}
@@ -155,8 +155,8 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
 
       {/* Planning → start voting */}
       {trip.status === "PLANNING" && (
-        <div className="flex items-center justify-between gap-4 rounded-lg border border-zinc-200 p-4">
-          <p className="text-sm text-zinc-500">
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-sage-200 p-4">
+          <p className="text-sm text-sage-500">
             Propose destinations and dates once voting opens.
           </p>
           {isOwner && <StartVotingButton tripId={tripId} />}
@@ -182,19 +182,19 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
 
       {/* Voting open → vote links + finalize panel */}
       {trip.status === "VOTING" && (
-        <div className="flex flex-col gap-3 rounded-lg border border-zinc-200 p-4">
-          <p className="text-sm text-zinc-500">
+        <div className="flex flex-col gap-3 rounded-lg border border-sage-200 p-4">
+          <p className="text-sm text-sage-500">
             Vote on{" "}
             <Link
               href={`/trips/${tripId}/destinations`}
-              className="font-medium text-zinc-700 underline"
+              className="font-medium text-sage-700 underline"
             >
               destinations
             </Link>{" "}
             and{" "}
             <Link
               href={`/trips/${tripId}/dates`}
-              className="font-medium text-zinc-700 underline"
+              className="font-medium text-sage-700 underline"
             >
               dates
             </Link>
@@ -240,7 +240,7 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
         {isFinalized && (
           <DashboardSection title="Budget" href={`/trips/${tripId}/budget`}>
             {categories.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500">
+              <div className="rounded-lg border border-dashed border-sage-300 p-4 text-center text-sm text-sage-500">
                 No budget categories yet —{" "}
                 {isOwner ? (
                   <Link href={`/trips/${tripId}/budget`} className="underline">
@@ -251,7 +251,7 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
                 )}
               </div>
             ) : (
-              <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+              <ul className="divide-y divide-sage-200 rounded-lg border border-sage-200">
                 {categories.map((cat) => {
                   const planned = cat.plannedAmount.toNumber();
                   const actual = actuals.get(cat.id) ?? 0;
@@ -259,15 +259,15 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
                   return (
                     <li key={cat.id} className="flex flex-col gap-1.5 px-4 py-3">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-zinc-900">{cat.name}</span>
-                        <span className="text-xs text-zinc-500">
+                        <span className="text-sage-900">{cat.name}</span>
+                        <span className="text-xs text-sage-500">
                           {trip.currency} {actual.toFixed(2)}{" "}
-                          <span className="text-zinc-400">/ {planned.toFixed(2)}</span>
+                          <span className="text-sage-400">/ {planned.toFixed(2)}</span>
                         </span>
                       </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-zinc-100">
+                      <div className="h-1.5 overflow-hidden rounded-full bg-sage-100">
                         <div
-                          className={`h-full rounded-full transition-all ${pct >= 100 ? "bg-red-500" : "bg-zinc-900"}`}
+                          className={`h-full rounded-full transition-all ${pct >= 100 ? "bg-red-500" : "bg-sage-900"}`}
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -280,18 +280,18 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
         )}
 
         <DashboardSection title="Members" href={`/trips/${tripId}/members`} hrefLabel="Manage →">
-          <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+          <ul className="divide-y divide-sage-200 rounded-lg border border-sage-200">
             {members.map((m) => (
               <li key={m.userId} className="flex items-center justify-between px-4 py-3">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-zinc-900">
+                  <p className="truncate text-sm font-medium text-sage-900">
                     {m.user.name ?? m.user.email}
                   </p>
                   {m.user.name && (
-                    <p className="truncate text-xs text-zinc-400">{m.user.email}</p>
+                    <p className="truncate text-xs text-sage-400">{m.user.email}</p>
                   )}
                 </div>
-                <span className="ml-3 shrink-0 text-xs text-zinc-500">
+                <span className="ml-3 shrink-0 text-xs text-sage-500">
                   {m.role === "OWNER" ? "Owner" : "Member"}
                 </span>
               </li>
@@ -306,23 +306,23 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <DashboardSection title="Recent expenses" href={`/trips/${tripId}/expenses`}>
               {recentExpenses.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500">
+                <div className="rounded-lg border border-dashed border-sage-300 p-4 text-center text-sm text-sage-500">
                   No expenses yet —{" "}
                   <Link href={`/trips/${tripId}/expenses`} className="underline">
                     add the first one
                   </Link>
                 </div>
               ) : (
-                <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+                <ul className="divide-y divide-sage-200 rounded-lg border border-sage-200">
                   {recentExpenses.map((e) => (
                     <li key={e.id} className="flex items-center justify-between px-4 py-3">
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm text-zinc-900">{e.description}</p>
-                        <p className="text-xs text-zinc-400">
+                        <p className="truncate text-sm text-sage-900">{e.description}</p>
+                        <p className="text-xs text-sage-400">
                           Paid by {e.paidBy.name ?? "Unknown"}
                         </p>
                       </div>
-                      <span className="ml-3 shrink-0 text-sm font-medium text-zinc-900">
+                      <span className="ml-3 shrink-0 text-sm font-medium text-sage-900">
                         {trip.currency} {e.amount.toFixed(2)}
                       </span>
                     </li>
@@ -333,23 +333,23 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
 
             <DashboardSection title="Settlement">
               {settlement.length === 0 ? (
-                <div className="rounded-lg border border-zinc-200 p-4 text-center text-sm text-zinc-500">
+                <div className="rounded-lg border border-sage-200 p-4 text-center text-sm text-sage-500">
                   {expenses.length === 0 ? "No expenses yet" : "All settled up ✓"}
                 </div>
               ) : (
-                <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+                <ul className="divide-y divide-sage-200 rounded-lg border border-sage-200">
                   {settlement.map((t, i) => (
                     <li key={i} className="flex items-center justify-between px-4 py-3 text-sm">
                       <span>
-                        <span className="font-medium text-zinc-900">
+                        <span className="font-medium text-sage-900">
                           {t.fromName ?? t.fromUserId}
                         </span>
-                        <span className="text-zinc-400"> → </span>
-                        <span className="font-medium text-zinc-900">
+                        <span className="text-sage-400"> → </span>
+                        <span className="font-medium text-sage-900">
                           {t.toName ?? t.toUserId}
                         </span>
                       </span>
-                      <span className="ml-3 shrink-0 font-medium text-zinc-900">
+                      <span className="ml-3 shrink-0 font-medium text-sage-900">
                         {trip.currency} {(t.amountCents / 100).toFixed(2)}
                       </span>
                     </li>
@@ -362,27 +362,27 @@ export default async function TripOverviewPage({ params }: TripOverviewPageProps
           {/* Upcoming itinerary */}
           <DashboardSection title="Itinerary" href={`/trips/${tripId}/itinerary`}>
             {upcomingItems.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500">
+              <div className="rounded-lg border border-dashed border-sage-300 p-4 text-center text-sm text-sage-500">
                 No itinerary items yet —{" "}
                 <Link href={`/trips/${tripId}/itinerary`} className="underline">
                   plan your days
                 </Link>
               </div>
             ) : (
-              <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+              <ul className="divide-y divide-sage-200 rounded-lg border border-sage-200">
                 {upcomingItems.map((item) => (
                   <li key={item.id} className="flex items-start gap-4 px-4 py-3">
-                    <span className="shrink-0 rounded bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700">
+                    <span className="shrink-0 rounded bg-sage-100 px-2 py-0.5 text-xs font-medium text-sage-700">
                       Day {item.dayIndex}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-zinc-900">{item.title}</p>
+                      <p className="truncate text-sm font-medium text-sage-900">{item.title}</p>
                       {item.location && (
-                        <p className="truncate text-xs text-zinc-400">{item.location}</p>
+                        <p className="truncate text-xs text-sage-400">{item.location}</p>
                       )}
                     </div>
                     {item.startTime && (
-                      <span className="shrink-0 text-xs text-zinc-400">
+                      <span className="shrink-0 text-xs text-sage-400">
                         {new Intl.DateTimeFormat("en-US", {
                           hour: "numeric",
                           minute: "2-digit",

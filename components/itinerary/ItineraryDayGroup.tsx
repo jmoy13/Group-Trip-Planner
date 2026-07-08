@@ -68,7 +68,7 @@ export function ItineraryDayGroup({
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-semibold text-zinc-700">Day {dayIndex}</h3>
+      <h3 className="text-sm font-semibold text-sage-700">Day {dayIndex}</h3>
       <ul className="flex flex-col gap-2">
         {orderedItems.map((item) => (
           <ItineraryItemCard

@@ -10,7 +10,7 @@ export function ForgotPasswordForm() {
 
   if (state?.success) {
     return (
-      <p className="text-sm text-zinc-600">
+      <p className="text-sm text-sage-600">
         If an account exists for that email, we&apos;ve sent a link to reset your password.
       </p>
     );

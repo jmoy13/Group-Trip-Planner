@@ -37,9 +37,9 @@ export default async function InvitePage({ params }: InvitePageProps) {
   if (!session) {
     return (
       <div className="flex flex-col gap-4 text-center">
-        <h1 className="text-lg font-semibold text-zinc-900">You&apos;re invited!</h1>
-        <p className="text-sm text-zinc-500">
-          Join <span className="font-medium text-zinc-700">{invitation.trip.name}</span>. Sign in
+        <h1 className="text-lg font-semibold text-sage-900">You&apos;re invited!</h1>
+        <p className="text-sm text-sage-500">
+          Join <span className="font-medium text-sage-700">{invitation.trip.name}</span>. Sign in
           or create an account with <span className="font-medium">{invitation.email}</span> to
           accept.
         </p>
@@ -62,11 +62,11 @@ export default async function InvitePage({ params }: InvitePageProps) {
   if (session.user.email !== invitation.email) {
     return (
       <div className="flex flex-col gap-4 text-center">
-        <h1 className="text-lg font-semibold text-zinc-900">Wrong account</h1>
-        <p className="text-sm text-zinc-500">
+        <h1 className="text-lg font-semibold text-sage-900">Wrong account</h1>
+        <p className="text-sm text-sage-500">
           This invitation was sent to{" "}
-          <span className="font-medium text-zinc-700">{invitation.email}</span>, but you&apos;re
-          signed in as <span className="font-medium text-zinc-700">{session.user.email}</span>.
+          <span className="font-medium text-sage-700">{invitation.email}</span>, but you&apos;re
+          signed in as <span className="font-medium text-sage-700">{session.user.email}</span>.
         </p>
         <SignOutButton />
       </div>
@@ -75,9 +75,9 @@ export default async function InvitePage({ params }: InvitePageProps) {
 
   return (
     <div className="flex flex-col gap-4 text-center">
-      <h1 className="text-lg font-semibold text-zinc-900">You&apos;re invited!</h1>
-      <p className="text-sm text-zinc-500">
-        Join <span className="font-medium text-zinc-700">{invitation.trip.name}</span> as a
+      <h1 className="text-lg font-semibold text-sage-900">You&apos;re invited!</h1>
+      <p className="text-sm text-sage-500">
+        Join <span className="font-medium text-sage-700">{invitation.trip.name}</span> as a
         member.
       </p>
       <div className="flex flex-col gap-2">
@@ -99,9 +99,9 @@ export default async function InvitePage({ params }: InvitePageProps) {
 function InviteMessage({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-2 text-center">
-      <h1 className="text-lg font-semibold text-zinc-900">{title}</h1>
-      <p className="text-sm text-zinc-500">{children}</p>
-      <Link href="/trips" className="mt-2 text-sm font-medium text-zinc-900 hover:underline">
+      <h1 className="text-lg font-semibold text-sage-900">{title}</h1>
+      <p className="text-sm text-sage-500">{children}</p>
+      <Link href="/trips" className="mt-2 text-sm font-medium text-sage-900 hover:underline">
         Go to your trips
       </Link>
     </div>

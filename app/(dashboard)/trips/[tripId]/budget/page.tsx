@@ -17,7 +17,7 @@ export default async function BudgetPage({ params }: BudgetPageProps) {
 
   if (trip.status === "PLANNING" || trip.status === "VOTING") {
     return (
-      <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+      <div className="rounded-lg border border-dashed border-sage-300 p-6 text-center text-sm text-sage-500">
         Budget unlocks once the destination and dates are finalized —{" "}
         <Link href={`/trips/${tripId}/destinations`} className="underline">
           go vote
@@ -44,14 +44,14 @@ export default async function BudgetPage({ params }: BudgetPageProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-medium text-zinc-900">Budget</h2>
+        <h2 className="font-medium text-sage-900">Budget</h2>
         <div className="text-right text-sm">
-          <p className="text-zinc-900">
+          <p className="text-sage-900">
             {trip.currency} {totalSpent.toFixed(2)}{" "}
-            <span className="text-zinc-400">/ {totalPlanned.toFixed(2)} planned</span>
+            <span className="text-sage-400">/ {totalPlanned.toFixed(2)} planned</span>
           </p>
           {uncategorizedSpent > 0 && (
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-sage-400">
               + {trip.currency} {uncategorizedSpent.toFixed(2)} uncategorized
             </p>
           )}
@@ -59,12 +59,12 @@ export default async function BudgetPage({ params }: BudgetPageProps) {
       </div>
 
       {categories.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        <div className="rounded-lg border border-dashed border-sage-300 p-6 text-center text-sm text-sage-500">
           No budget categories yet —{" "}
           {isOwner ? "add the first one below." : "ask the trip owner to add one."}
         </div>
       ) : (
-        <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+        <ul className="divide-y divide-sage-200 rounded-lg border border-sage-200">
           {categories.map((category) => (
             <BudgetCategoryRow
               key={category.id}

@@ -28,10 +28,10 @@ export default async function DestinationsPage({ params }: DestinationsPageProps
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="font-medium text-zinc-900">Destinations</h2>
+      <h2 className="font-medium text-sage-900">Destinations</h2>
 
       {options.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        <div className="rounded-lg border border-dashed border-sage-300 p-6 text-center text-sm text-sage-500">
           No destinations proposed yet — add the first one.
         </div>
       ) : (
@@ -66,7 +66,7 @@ export default async function DestinationsPage({ params }: DestinationsPageProps
       {canVote ? (
         <ProposeDestinationForm tripId={tripId} />
       ) : (
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-sage-400">
           {trip.status === "PLANNING"
             ? "Voting hasn't started yet."
             : "Voting is closed for this trip."}

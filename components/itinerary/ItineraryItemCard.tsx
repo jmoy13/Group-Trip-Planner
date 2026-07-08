@@ -61,7 +61,7 @@ export function ItineraryItemCard({
 
   if (isEditing) {
     return (
-      <li className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-3">
+      <li className="flex flex-col gap-2 rounded-lg border border-sage-200 p-3">
         <form action={action} className="flex flex-col gap-2">
           <input type="hidden" name="tripId" value={tripId} />
           <input type="hidden" name="itemId" value={id} />
@@ -100,7 +100,7 @@ export function ItineraryItemCard({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor={`description-${id}`} className="text-sm font-medium text-zinc-700">
+            <label htmlFor={`description-${id}`} className="text-sm font-medium text-sage-700">
               Description
             </label>
             <textarea
@@ -108,7 +108,7 @@ export function ItineraryItemCard({
               name="description"
               rows={2}
               defaultValue={description ?? ""}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
+              className="rounded-md border border-sage-300 bg-white px-3 py-2 text-sm text-sage-900 outline-none focus:ring-2 focus:ring-sage-400"
             />
           </div>
           <div className="flex gap-2">
@@ -136,29 +136,29 @@ export function ItineraryItemCard({
       onDragStart={onDragStartItem}
       onDragOver={onDragOverItem}
       onDrop={onDropItem}
-      className={`flex items-start justify-between gap-3 rounded-lg border border-zinc-200 p-3 ${
+      className={`flex items-start justify-between gap-3 rounded-lg border border-sage-200 p-3 ${
         draggable ? "cursor-move" : ""
       }`}
     >
       <div>
-        <p className="text-sm font-medium text-zinc-900">{title}</p>
+        <p className="text-sm font-medium text-sage-900">{title}</p>
         {(startTime || endTime) && (
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-sage-500">
             {startTime && timeFormatter.format(startTime)}
             {startTime && endTime && " – "}
             {endTime && timeFormatter.format(endTime)}
           </p>
         )}
-        {location && <p className="text-xs text-zinc-500">{location}</p>}
-        {description && <p className="mt-1 text-sm text-zinc-600">{description}</p>}
-        <p className="mt-1 text-xs text-zinc-400">Added by {createdByName ?? "a member"}</p>
+        {location && <p className="text-xs text-sage-500">{location}</p>}
+        {description && <p className="mt-1 text-sm text-sage-600">{description}</p>}
+        <p className="mt-1 text-xs text-sage-400">Added by {createdByName ?? "a member"}</p>
       </div>
       {canEdit && (
         <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="text-xs text-zinc-600 hover:underline"
+            className="text-xs text-sage-600 hover:underline"
           >
             Edit
           </button>

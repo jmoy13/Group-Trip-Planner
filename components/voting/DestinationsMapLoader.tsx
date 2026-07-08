@@ -8,7 +8,7 @@ import type { MapDestination } from "@/components/voting/DestinationsMap";
 const DestinationsMap = dynamic(() => import("@/components/voting/DestinationsMap"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-72 items-center justify-center rounded-lg border border-zinc-200 text-sm text-zinc-400">
+    <div className="flex h-72 items-center justify-center rounded-lg border border-sage-200 text-sm text-sage-400">
       Loading map…
     </div>
   ),

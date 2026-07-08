@@ -10,10 +10,10 @@ export default async function Home() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 text-center">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">
+        <h1 className="text-3xl font-semibold tracking-tight text-sage-900">
           Group Trip Planner
         </h1>
-        <p className="max-w-md text-zinc-500">
+        <p className="max-w-md text-sage-500">
           Vote on destinations and dates, track the budget, and split expenses — all in one
           shared place.
         </p>

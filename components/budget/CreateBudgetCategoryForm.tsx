@@ -9,7 +9,7 @@ export function CreateBudgetCategoryForm({ tripId, currency }: { tripId: string;
   const [state, action, pending] = useActionState(createBudgetCategoryAction, undefined);
 
   return (
-    <form action={action} className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-4">
+    <form action={action} className="flex flex-col gap-2 rounded-lg border border-sage-200 p-4">
       <input type="hidden" name="tripId" value={tripId} />
       <div className="flex items-end gap-2">
         <div className="flex-1">

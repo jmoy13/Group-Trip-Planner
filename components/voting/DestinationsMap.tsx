@@ -49,7 +49,7 @@ export default function DestinationsMap({
   if (located.length === 0) {
     return (
       <div
-        className={`flex ${heightClassName} items-center justify-center rounded-lg border border-dashed border-zinc-300 text-sm text-zinc-500`}
+        className={`flex ${heightClassName} items-center justify-center rounded-lg border border-dashed border-sage-300 text-sm text-sage-500`}
       >
         No destinations have a map location yet.
       </div>
@@ -59,7 +59,7 @@ export default function DestinationsMap({
   const bounds = L.latLngBounds(located.map((d) => [d.latitude, d.longitude]));
 
   return (
-    <div className={`${heightClassName} overflow-hidden rounded-lg border border-zinc-200`}>
+    <div className={`${heightClassName} overflow-hidden rounded-lg border border-sage-200`}>
       <MapContainer
         bounds={bounds}
         boundsOptions={{ padding: [32, 32], maxZoom: 12 }}

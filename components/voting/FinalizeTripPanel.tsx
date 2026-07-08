@@ -21,7 +21,7 @@ export function FinalizeTripPanel({ tripId, destinations, dateOptions }: Finaliz
 
   if (destinations.length === 0 || dateOptions.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-zinc-300 p-4 text-sm text-zinc-500">
+      <div className="rounded-lg border border-dashed border-sage-300 p-4 text-sm text-sage-500">
         Propose at least one destination and one date range before finalizing.
       </div>
     );
@@ -31,21 +31,21 @@ export function FinalizeTripPanel({ tripId, destinations, dateOptions }: Finaliz
   const leadingDateOption = [...dateOptions].sort((a, b) => b.voteCount - a.voteCount)[0];
 
   return (
-    <form action={action} className="flex flex-col gap-3 rounded-lg border border-zinc-200 p-4">
+    <form action={action} className="flex flex-col gap-3 rounded-lg border border-sage-200 p-4">
       <input type="hidden" name="tripId" value={tripId} />
-      <h3 className="font-medium text-zinc-900">Finalize trip</h3>
-      <p className="text-sm text-zinc-500">
+      <h3 className="font-medium text-sage-900">Finalize trip</h3>
+      <p className="text-sm text-sage-500">
         Defaults to the leading destination and dates — override either before confirming.
       </p>
       <div className="flex flex-col gap-1">
-        <label htmlFor="finalDestinationId" className="text-sm font-medium text-zinc-700">
+        <label htmlFor="finalDestinationId" className="text-sm font-medium text-sage-700">
           Destination
         </label>
         <select
           id="finalDestinationId"
           name="finalDestinationId"
           defaultValue={leadingDestination.id}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-400"
+          className="rounded-md border border-sage-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sage-400"
         >
           {destinations.map((destination) => (
             <option key={destination.id} value={destination.id}>
@@ -56,14 +56,14 @@ export function FinalizeTripPanel({ tripId, destinations, dateOptions }: Finaliz
         </select>
       </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="finalDateOptionId" className="text-sm font-medium text-zinc-700">
+        <label htmlFor="finalDateOptionId" className="text-sm font-medium text-sage-700">
           Dates
         </label>
         <select
           id="finalDateOptionId"
           name="finalDateOptionId"
           defaultValue={leadingDateOption.id}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-400"
+          className="rounded-md border border-sage-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sage-400"
         >
           {dateOptions.map((option) => (
             <option key={option.id} value={option.id}>

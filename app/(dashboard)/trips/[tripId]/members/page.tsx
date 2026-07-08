@@ -20,18 +20,18 @@ export default async function MembersPage({ params }: MembersPageProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-3">
-        <h2 className="font-medium text-zinc-900">Members ({members.length})</h2>
-        <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
+        <h2 className="font-medium text-sage-900">Members ({members.length})</h2>
+        <ul className="divide-y divide-sage-200 rounded-lg border border-sage-200">
           {members.map((member) => (
             <li key={member.id} className="flex items-center justify-between px-4 py-3">
               <div>
-                <p className="text-sm font-medium text-zinc-900">
+                <p className="text-sm font-medium text-sage-900">
                   {member.user.name ?? member.user.email}
                 </p>
-                <p className="text-xs text-zinc-500">{member.user.email}</p>
+                <p className="text-xs text-sage-500">{member.user.email}</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
+                <span className="rounded-full bg-sage-100 px-2 py-0.5 text-xs font-medium text-sage-600">
                   {member.role === "OWNER" ? "Owner" : "Member"}
                 </span>
                 {isOwner && member.role !== "OWNER" && (
@@ -44,8 +44,8 @@ export default async function MembersPage({ params }: MembersPageProps) {
       </div>
 
       {isOwner && (
-        <div className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-4">
-          <h2 className="font-medium text-zinc-900">Invite someone</h2>
+        <div className="flex flex-col gap-2 rounded-lg border border-sage-200 p-4">
+          <h2 className="font-medium text-sage-900">Invite someone</h2>
           <InviteMemberForm tripId={tripId} />
         </div>
       )}

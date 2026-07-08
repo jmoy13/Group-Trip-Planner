@@ -117,7 +117,7 @@ export function DatePicker({
   return (
     <div className="flex flex-col gap-1" ref={containerRef}>
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-zinc-700">
+        <label htmlFor={id} className="text-sm font-medium text-sage-700">
           {label}
         </label>
       )}
@@ -126,7 +126,7 @@ export function DatePicker({
           type="button"
           id={id}
           onClick={() => setOpen((prev) => !prev)}
-          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-left text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
+          className="w-full rounded-md border border-sage-300 bg-white px-3 py-2 text-left text-sm text-sage-900 outline-none focus:ring-2 focus:ring-sage-400"
         >
           {selected ? displayFormatter.format(selected) : placeholder}
         </button>
@@ -139,29 +139,29 @@ export function DatePicker({
           />
         )}
         {open && (
-          <div className="absolute z-10 mt-1 w-64 rounded-lg border border-zinc-200 bg-white p-3 shadow-lg">
+          <div className="absolute z-10 mt-1 w-64 rounded-lg border border-sage-200 bg-white p-3 shadow-lg">
             <div className="mb-2 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => setViewMonth(new Date(year, month - 1, 1))}
-                className="rounded px-2 py-1 text-sm text-zinc-500 hover:bg-zinc-100"
+                className="rounded px-2 py-1 text-sm text-sage-500 hover:bg-sage-100"
                 aria-label="Previous month"
               >
                 ←
               </button>
-              <span className="text-sm font-medium text-zinc-900">
+              <span className="text-sm font-medium text-sage-900">
                 {viewMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
               </span>
               <button
                 type="button"
                 onClick={() => setViewMonth(new Date(year, month + 1, 1))}
-                className="rounded px-2 py-1 text-sm text-zinc-500 hover:bg-zinc-100"
+                className="rounded px-2 py-1 text-sm text-sage-500 hover:bg-sage-100"
                 aria-label="Next month"
               >
                 →
               </button>
             </div>
-            <div className="grid grid-cols-7 gap-1 text-center text-xs text-zinc-400">
+            <div className="grid grid-cols-7 gap-1 text-center text-xs text-sage-400">
               {WEEKDAYS.map((weekday, i) => (
                 <span key={i}>{weekday}</span>
               ))}
@@ -179,10 +179,10 @@ export function DatePicker({
                     onClick={() => selectDate(date)}
                     className={`rounded-md py-1 text-sm ${
                       isSelected
-                        ? "bg-zinc-900 text-white"
+                        ? "bg-sage-900 text-white"
                         : disabled
-                          ? "cursor-not-allowed text-zinc-300"
-                          : "text-zinc-700 hover:bg-zinc-100"
+                          ? "cursor-not-allowed text-sage-300"
+                          : "text-sage-700 hover:bg-sage-100"
                     }`}
                   >
                     {date.getDate()}

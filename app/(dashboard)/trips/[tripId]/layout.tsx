@@ -25,41 +25,41 @@ export default async function TripLayout({ children, params }: TripLayoutProps) 
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-200 pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-sage-200 pb-4">
         <div>
-          <Link href="/trips" className="text-xs text-zinc-400 hover:underline">
+          <Link href="/trips" className="text-xs text-sage-400 hover:underline">
             ← All trips
           </Link>
-          <h1 className="text-xl font-semibold text-zinc-900">{trip.name}</h1>
+          <h1 className="text-xl font-semibold text-sage-900">{trip.name}</h1>
         </div>
-        <nav className="flex gap-4 text-sm text-zinc-500">
-          <Link href={`/trips/${tripId}`} className="hover:text-zinc-900">
+        <nav className="flex gap-4 text-sm text-sage-500">
+          <Link href={`/trips/${tripId}`} className="hover:text-sage-900">
             Overview
           </Link>
-          <Link href={`/trips/${tripId}/destinations`} className="hover:text-zinc-900">
+          <Link href={`/trips/${tripId}/destinations`} className="hover:text-sage-900">
             Destinations
           </Link>
-          <Link href={`/trips/${tripId}/dates`} className="hover:text-zinc-900">
+          <Link href={`/trips/${tripId}/dates`} className="hover:text-sage-900">
             Dates
           </Link>
           {isFinalized && (
             <>
-              <Link href={`/trips/${tripId}/budget`} className="hover:text-zinc-900">
+              <Link href={`/trips/${tripId}/budget`} className="hover:text-sage-900">
                 Budget
               </Link>
-              <Link href={`/trips/${tripId}/itinerary`} className="hover:text-zinc-900">
+              <Link href={`/trips/${tripId}/itinerary`} className="hover:text-sage-900">
                 Itinerary
               </Link>
-              <Link href={`/trips/${tripId}/expenses`} className="hover:text-zinc-900">
+              <Link href={`/trips/${tripId}/expenses`} className="hover:text-sage-900">
                 Expenses
               </Link>
             </>
           )}
-          <Link href={`/trips/${tripId}/members`} className="hover:text-zinc-900">
+          <Link href={`/trips/${tripId}/members`} className="hover:text-sage-900">
             Members
           </Link>
           {membership.role === "OWNER" && (
-            <Link href={`/trips/${tripId}/settings`} className="hover:text-zinc-900">
+            <Link href={`/trips/${tripId}/settings`} className="hover:text-sage-900">
               Settings
             </Link>
           )}

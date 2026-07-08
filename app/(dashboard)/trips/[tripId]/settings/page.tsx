@@ -20,12 +20,12 @@ export default async function TripSettingsPage({ params }: TripSettingsPageProps
   return (
     <div className="flex max-w-md flex-col gap-8">
       <div>
-        <h2 className="mb-3 font-medium text-zinc-900">Trip settings</h2>
+        <h2 className="mb-3 font-medium text-sage-900">Trip settings</h2>
         <UpdateTripForm trip={trip} />
       </div>
       <div className="rounded-lg border border-red-200 p-4">
         <h2 className="mb-2 font-medium text-red-700">Danger zone</h2>
-        <p className="mb-3 text-sm text-zinc-500">
+        <p className="mb-3 text-sm text-sage-500">
           Deleting a trip removes it and all its data permanently.
         </p>
         <DeleteTripButton tripId={tripId} tripName={trip.name} />

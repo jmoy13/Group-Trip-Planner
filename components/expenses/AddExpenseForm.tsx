@@ -74,8 +74,8 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
   );
 
   return (
-    <form action={action} className="flex flex-col gap-4 rounded-lg border border-zinc-200 p-4">
-      <p className="text-sm font-medium text-zinc-700">Add expense</p>
+    <form action={action} className="flex flex-col gap-4 rounded-lg border border-sage-200 p-4">
+      <p className="text-sm font-medium text-sage-700">Add expense</p>
       <input type="hidden" name="tripId" value={tripId} />
       <input type="hidden" name="splitType" value={splitType} />
       {splitType === "EQUAL" && (
@@ -113,13 +113,13 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
 
       <div className="flex flex-wrap gap-2">
         <div className="min-w-40 flex-1">
-          <label htmlFor="paidById" className="text-sm font-medium text-zinc-700">
+          <label htmlFor="paidById" className="text-sm font-medium text-sage-700">
             Paid by
           </label>
           <select
             id="paidById"
             name="paidById"
-            className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
+            className="mt-1 w-full rounded-md border border-sage-300 bg-white px-3 py-2 text-sm text-sage-900 outline-none focus:ring-2 focus:ring-sage-400"
           >
             {members.map((m) => (
               <option key={m.id} value={m.id}>
@@ -130,13 +130,13 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
         </div>
         {categories.length > 0 && (
           <div className="min-w-40 flex-1">
-            <label htmlFor="categoryId" className="text-sm font-medium text-zinc-700">
+            <label htmlFor="categoryId" className="text-sm font-medium text-sage-700">
               Category (optional)
             </label>
             <select
               id="categoryId"
               name="categoryId"
-              className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
+              className="mt-1 w-full rounded-md border border-sage-300 bg-white px-3 py-2 text-sm text-sage-900 outline-none focus:ring-2 focus:ring-sage-400"
             >
               <option value="">None</option>
               {categories.map((c) => (
@@ -150,7 +150,7 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
       </div>
 
       <div>
-        <p className="mb-1 text-sm font-medium text-zinc-700">Split type</p>
+        <p className="mb-1 text-sm font-medium text-sage-700">Split type</p>
         <div className="flex gap-2">
           {(["EQUAL", "EXACT_AMOUNT", "PERCENTAGE"] as SplitType[]).map((type) => (
             <button
@@ -159,8 +159,8 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
               onClick={() => setSplitType(type)}
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 splitType === type
-                  ? "bg-zinc-900 text-white"
-                  : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                  ? "bg-sage-900 text-white"
+                  : "bg-sage-100 text-sage-600 hover:bg-sage-200"
               }`}
             >
               {type === "EQUAL" ? "Equal" : type === "EXACT_AMOUNT" ? "Exact amount" : "Percentage"}
@@ -170,7 +170,7 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-medium text-zinc-700">Participants</p>
+        <p className="mb-2 text-sm font-medium text-sage-700">Participants</p>
         <div className="flex flex-col gap-2">
           {members.map((member) => (
             <label key={member.id} className="flex items-center gap-3">
@@ -178,9 +178,9 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
                 type="checkbox"
                 checked={selectedParticipants.has(member.id)}
                 onChange={() => toggleParticipant(member.id)}
-                className="rounded border-zinc-300"
+                className="rounded border-sage-300"
               />
-              <span className="flex-1 text-sm text-zinc-700">{member.name ?? member.email}</span>
+              <span className="flex-1 text-sm text-sage-700">{member.name ?? member.email}</span>
               {splitType === "EXACT_AMOUNT" && selectedParticipants.has(member.id) && (
                 <input
                   type="text"
@@ -189,7 +189,7 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
                   onChange={(e) =>
                     setExactAmounts((prev) => ({ ...prev, [member.id]: e.target.value }))
                   }
-                  className="w-28 rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
+                  className="w-28 rounded-md border border-sage-300 bg-white px-2 py-1 text-sm text-sage-900 outline-none focus:ring-2 focus:ring-sage-400"
                 />
               )}
               {splitType === "PERCENTAGE" && selectedParticipants.has(member.id) && (
@@ -201,9 +201,9 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
                     onChange={(e) =>
                       setPercentages((prev) => ({ ...prev, [member.id]: e.target.value }))
                     }
-                    className="w-16 rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm text-zinc-900 outline-none focus:ring-2 focus:ring-zinc-400"
+                    className="w-16 rounded-md border border-sage-300 bg-white px-2 py-1 text-sm text-sage-900 outline-none focus:ring-2 focus:ring-sage-400"
                   />
-                  <span className="text-xs text-zinc-400">%</span>
+                  <span className="text-xs text-sage-400">%</span>
                 </div>
               )}
             </label>
@@ -214,7 +214,7 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
             className={`mt-2 text-xs ${
               expenseAmount && Math.abs(exactTotal - Number(expenseAmount)) < 0.01
                 ? "text-green-600"
-                : "text-zinc-400"
+                : "text-sage-400"
             }`}
           >
             Total entered: {currency} {exactTotal.toFixed(2)}
@@ -224,7 +224,7 @@ export function AddExpenseForm({ tripId, currency, members, categories }: AddExp
         {splitType === "PERCENTAGE" && (
           <p
             className={`mt-2 text-xs ${
-              Math.abs(pctTotal - 100) < 0.01 ? "text-green-600" : "text-zinc-400"
+              Math.abs(pctTotal - 100) < 0.01 ? "text-green-600" : "text-sage-400"
             }`}
           >
             Total: {pctTotal.toFixed(0)}% / 100%
