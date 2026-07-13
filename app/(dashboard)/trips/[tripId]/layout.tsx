@@ -1,8 +1,19 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getTripMembership } from "@/lib/auth/permissions";
 import { getTripForMember } from "@/lib/services/trips";
+import { AppShell } from "@/components/layout/AppShell";
+import type { SidebarNavItem } from "@/components/layout/SidebarNavLinks";
+import {
+  HomeIcon,
+  MapPinIcon,
+  CalendarIcon,
+  ListIcon,
+  WalletIcon,
+  PieChartIcon,
+  UsersIcon,
+  GearIcon,
+} from "@/components/icons";
 
 interface TripLayoutProps {
   children: React.ReactNode;
@@ -23,49 +34,32 @@ export default async function TripLayout({ children, params }: TripLayoutProps) 
   const isFinalized =
     trip.status === "FINALIZED" || trip.status === "COMPLETED" || trip.status === "ARCHIVED";
 
+  const nav: SidebarNavItem[] = [
+    { href: `/trips/${tripId}`, label: "Trip Overview", icon: <HomeIcon />, exact: true },
+    { href: `/trips/${tripId}/destinations`, label: "Destinations", icon: <MapPinIcon /> },
+    { href: `/trips/${tripId}/dates`, label: "Dates", icon: <CalendarIcon /> },
+    ...(isFinalized
+      ? [
+          { href: `/trips/${tripId}/itinerary`, label: "Itinerary", icon: <ListIcon /> },
+          { href: `/trips/${tripId}/expenses`, label: "Expenses", icon: <WalletIcon /> },
+          { href: `/trips/${tripId}/budget`, label: "Budget", icon: <PieChartIcon /> },
+        ]
+      : []),
+    { href: `/trips/${tripId}/members`, label: "Members", icon: <UsersIcon /> },
+    ...(membership.role === "OWNER"
+      ? [{ href: `/trips/${tripId}/settings`, label: "Settings", icon: <GearIcon /> }]
+      : []),
+  ];
+
   return (
-    <div className="flex flex-1 flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-sage-200 pb-4">
-        <div>
-          <Link href="/trips" className="text-xs text-sage-400 hover:underline">
-            ← All trips
-          </Link>
-          <h1 className="text-xl font-semibold text-sage-900">{trip.name}</h1>
-        </div>
-        <nav className="flex gap-4 text-sm text-sage-500">
-          <Link href={`/trips/${tripId}`} className="hover:text-sage-900">
-            Overview
-          </Link>
-          <Link href={`/trips/${tripId}/destinations`} className="hover:text-sage-900">
-            Destinations
-          </Link>
-          <Link href={`/trips/${tripId}/dates`} className="hover:text-sage-900">
-            Dates
-          </Link>
-          {isFinalized && (
-            <>
-              <Link href={`/trips/${tripId}/budget`} className="hover:text-sage-900">
-                Budget
-              </Link>
-              <Link href={`/trips/${tripId}/itinerary`} className="hover:text-sage-900">
-                Itinerary
-              </Link>
-              <Link href={`/trips/${tripId}/expenses`} className="hover:text-sage-900">
-                Expenses
-              </Link>
-            </>
-          )}
-          <Link href={`/trips/${tripId}/members`} className="hover:text-sage-900">
-            Members
-          </Link>
-          {membership.role === "OWNER" && (
-            <Link href={`/trips/${tripId}/settings`} className="hover:text-sage-900">
-              Settings
-            </Link>
-          )}
-        </nav>
-      </div>
+    <AppShell
+      breadcrumb={[{ label: "My Trips", href: "/trips" }, { label: trip.name }]}
+      userName={user.name ?? user.email ?? "You"}
+      userEmail={user.email ?? ""}
+      userImage={user.image}
+      nav={nav}
+    >
       {children}
-    </div>
+    </AppShell>
   );
 }

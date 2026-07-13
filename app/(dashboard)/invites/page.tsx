@@ -1,4 +1,5 @@
-import { getCurrentUser } from "@/lib/auth/session";
+import { AppShell } from "@/components/layout/AppShell";
+import { getGenericShellData } from "@/lib/layout/shell";
 import { listPendingInvitationsForUser } from "@/lib/services/invitations";
 import { acceptInvitationAction, declineInvitationAction } from "@/app/invite/actions";
 import { Button } from "@/components/ui/Button";
@@ -10,11 +11,17 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 });
 
 export default async function InvitesPage() {
-  const user = await getCurrentUser();
-  const invitations = user?.email ? await listPendingInvitationsForUser(user.email) : [];
+  const { user, nav } = await getGenericShellData();
+  const invitations = user.email ? await listPendingInvitationsForUser(user.email) : [];
 
   return (
-    <div className="flex flex-col gap-6">
+    <AppShell
+      breadcrumb={[{ label: "My Trips", href: "/trips" }, { label: "Invites" }]}
+      userName={user.name ?? user.email ?? "You"}
+      userEmail={user.email ?? ""}
+      userImage={user.image}
+      nav={nav}
+    >
       <h1 className="text-lg font-semibold text-sage-900">Invites</h1>
 
       {invitations.length === 0 ? (
@@ -54,6 +61,6 @@ export default async function InvitesPage() {
           ))}
         </ul>
       )}
-    </div>
+    </AppShell>
   );
 }

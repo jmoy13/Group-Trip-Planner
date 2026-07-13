@@ -56,6 +56,51 @@ export function listPendingInvitationsForUser(email: string) {
   });
 }
 
+/** Count only, for sidebar badges — avoids fetching full invitation rows just to show a number. */
+export function countPendingInvitationsForUser(email: string) {
+  return prisma.tripInvitation.count({
+    where: { email, status: "INVITED", expiresAt: { gt: new Date() } },
+  });
+}
+
+/** Small preview (trip dates + inviter name) for the trips-list dashboard's Invites rail —
+ *  `TripInvitation.invitedBy` is a plain userId string, not a Prisma relation (see claude.md's
+ *  decisions log on why `proposedBy`/`invitedBy`-style fields stay plain strings), so the
+ *  inviter's name is resolved with one extra batched lookup rather than a join. */
+export async function listPendingInvitationsForUserPreview(email: string, limit = 2) {
+  const invitations = await prisma.tripInvitation.findMany({
+    where: { email, status: "INVITED", expiresAt: { gt: new Date() } },
+    include: {
+      trip: { select: { id: true, name: true, finalStartDate: true, finalEndDate: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  const inviterIds = [...new Set(invitations.map((i) => i.invitedBy))];
+  const inviters = await prisma.user.findMany({
+    where: { id: { in: inviterIds } },
+    select: { id: true, name: true },
+  });
+  const inviterNames = new Map(inviters.map((u) => [u.id, u.name]));
+
+  return invitations.map((invitation) => ({
+    ...invitation,
+    inviterName: inviterNames.get(invitation.invitedBy) ?? "Someone",
+  }));
+}
+
+/** Outstanding (not yet accepted/declined) invitations for a trip — owner-only, since invitee
+ *  email addresses are sensitive per the security checklist in claude.md §7. Used by the trip
+ *  overview's Members panel to show "Pending" rows alongside accepted members. */
+export async function listPendingTripInvitations(tripId: string, userId: string) {
+  await requireTripOwner(tripId, userId);
+  return prisma.tripInvitation.findMany({
+    where: { tripId, status: "INVITED", expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 export async function declineInvitation(token: string, userEmail: string) {
   const invitation = await getInvitationByToken(token);
   if (!invitation) throw new PermissionError("This invitation link is invalid.");
